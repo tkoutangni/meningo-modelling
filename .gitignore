@@ -16,6 +16,7 @@
 
 # RStudio files
 .Rproj.user/
+.Rproj
 
 # produced vignettes
 vignettes/*.html
@@ -36,3 +37,9 @@ vignettes/*.pdf
 **/.DS_Store
 *.DS_Store
 .DS_store
+.Rproj.user
+
+# Additional files produced by knitr after runing a .Rmd file.
+/*_files/
+*.html
+
