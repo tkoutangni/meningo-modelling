@@ -1077,7 +1077,7 @@ theme_opts = theme(
     axis.text = element_text(size = 14),
     legend.key = element_rect(fill = "white", colour = NA),
     legend.background = element_rect(fill = "white"),
-    legend.position = c("top"),
+    legend.position = c("right"),
     legend.key.size = unit(1, "cm"),
     legend.text = element_text(size = 13),
     legend.title = element_text(size = 13)
@@ -1169,6 +1169,18 @@ list_district_health_centers<-function(data.frame=NULL){
     }
     names(district_health_centers_list)<-districts.names
     return (district_health_centers_list)
+}
+
+
+# A function to sum age-specific estimates of the model variables by row to get total estimates
+
+add_row_totals_per_model_variable<-function(age_structure_model_output){
+  age_structure_model_output$total_Susc<- rowSums(age_structure_model_output[,c("Susc1",  "Susc2" ,    "Susc3" ,   "Susc4")])
+  age_structure_model_output$total_Carrier<- rowSums(age_structure_model_output[,c("Carrier1",  "Carrier2" ,    "Carrier3" ,   "Carrier4")])
+  age_structure_model_output$total_Ill<- rowSums(age_structure_model_output[,c("Ill1",  "Ill2" ,    "Ill3" ,   "Ill4")])
+  age_structure_model_output$total_newI<- rowSums(age_structure_model_output[,c("newI1",  "newI2" ,    "newI3" ,   "newI4")])
+  age_structure_model_output$total_Recov<- rowSums(age_structure_model_output[,c("Recov1",  "Recov2" ,    "Recov3" ,   "Recov4")])
+  return(age_structure_model_output)
 }
 
 ####################################################

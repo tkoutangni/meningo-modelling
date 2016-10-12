@@ -7,10 +7,10 @@
 ##################################################################################
 # sample initial values for numerical simulation of the model.
 # 
-insert_age_structure = FALSE # change to TRUE to run age structured
+insert_age_structure = insert_age_structure # change to TRUE to run age structured
 #model
 # include heterogenous mixing? with the WAIFW matrice estimated by tartof et al?
-heterogenous_mixing = FALSE # turn this to TRUE to include actual
+heterogenous_mixing = heterogenous_mixing # turn this to TRUE to include actual
 # heterogenous-mixing with the estimated waifw
 
 nage = 4 # 4 age groupes  defined as <5 years; 5-12 years, 13-19, and 20+ years

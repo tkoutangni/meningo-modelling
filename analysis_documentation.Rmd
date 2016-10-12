@@ -1,11 +1,12 @@
 ---
-title: "Main documentation"
+title: "Analysis documentation"
 author: "Thibaut Koutangni"
 date: "October 2016"
-output: 
-    html_document:
-        fig.width: 10
-        fig.height: 8
+output:
+  word_document: default
+  html_document:
+    fig.height: 8
+    fig.width: 10
 ---
 
 This document present outputs of my models simulations.
@@ -20,8 +21,9 @@ The file `run_first.R` in the R/ folder contains, functions, packages, and scrip
 ```{r setup, cache=FALSE, include=FALSE}
 library(knitr)
 output <- opts_knit$get("rmarkdown.pandoc.to")
-if (output=="html") opts_chunk$set(fig.width=10, fig.height=8, message=FALSE, warning=FALSE, results="asis", cache = TRUE)
-#if (output=="docx") opts_chunk$set(fig.width=6,  fig.height=6)
+if (output=="html") opts_chunk$set(fig.width=10, fig.height=8, message=FALSE, warning=FALSE, results="markup", cache = TRUE, autodep = TRUE)
+if (output=="docx") opts_chunk$set(fig.width=6,  fig.height=6)
+dep_auto()
 ```
 
 
@@ -31,12 +33,19 @@ if (output=="html") opts_chunk$set(fig.width=10, fig.height=8, message=FALSE, wa
 source('R/run_first.R')
 ```
 
-### Sample simulations of the SCIRS Model
+## Sample simulations of the SCIRS Model
 
-#### 1. Simulating the model with no forcing and no age structure
+### 1. Simulating the model with no forcing and no age structure.
+
+```{r no_age_structure_params, echo=TRUE}
+# setup the appropriate parameters to run the model with no age structure.
+insert_age_structure = FALSE; heterogenous_mixing = FALSE
+# load the model parameters file again to account for the value of the insert_age_structure global variable.
+source('R/models_parameters.R')
+```
+
 
 ```{r echo=TRUE}
-
 # simulate model
 sim1 = sample_sim(epsilon_a = 0.0, epsilon_b = 0.0, forcing_invasion = FALSE, nyears = 5, age_structured = FALSE)
 # subset model output and choose variables to plot.
@@ -45,7 +54,7 @@ melt_sim1_cases = melt_any_data.frame(sim1, "time", c("newI", "Ill"))
 
 ```
 
-```{r echo=FALSE, fig.width=11, fig.height=4, fig.align='center'}
+```{r echo=FALSE, fig.width=11, fig.height=4, fig.align='center', cache=FALSE}
 
 # Plot simulations
 # Plot selected variables except cases
@@ -63,7 +72,7 @@ multi_ggplot(p1,p2 ,cols = 2)
 + ##### Figure caption: Plot of model simulation with no forcing and no age structure.
 
 
-#### 2. Simulating the model with no age structure by imposing seasonal forcing on the risk of disease among colonized individuals (i.e., the invasion rate)
+### 2. Simulating the model with no age structure by imposing seasonal forcing on the risk of disease among colonized individuals (i.e., the invasion rate)
 ```{r echo=TRUE}
 
 sim2 = sample_sim(epsilon_a = 0.1, epsilon_b = 0.0, forcing_invasion = TRUE, nyears = 5, age_structured = FALSE)
@@ -73,7 +82,7 @@ melt_sim2_cases = melt_any_data.frame(sim2, "time", c("newI", "Ill"))
 
 ```
 
-```{r echo=FALSE, fig.width=11, fig.height=4, fig.align='center'}
+```{r echo=FALSE, fig.width=11, fig.height=4, fig.align='center', cache=FALSE}
 
 # Plot simulations
 # Plot selected variables except cases
@@ -91,7 +100,7 @@ multi_ggplot(p3,p4 ,cols = 2)
 
 + ##### Figure caption: Plot of model simulation with no age structure but seasonal forcing of invasion parameter alone.
 
-#### 3. Simulating the model with no age structure by imposing seasonal forcing on the transmission of the bacteria
+### 3. Simulating the model with no age structure by imposing seasonal forcing on the transmission of the bacteria
 ```{r echo=TRUE}
 sim3 = sample_sim(epsilon_a = 0.0, epsilon_b = 0.1, forcing_invasion = FALSE, nyears = 5, age_structured = FALSE)
 # subset model output and choose variables to plot.
@@ -100,7 +109,7 @@ melt_sim3_cases = melt_any_data.frame(sim3, "time", c("newI", "Ill"))
 
 ```
 
-```{r echo=FALSE, fig.width=11, fig.height=4, fig.align='center'}
+```{r echo=FALSE, fig.width=11, fig.height=4, fig.align='center', cache=FALSE}
 
 # Plot simulations
 # Plot selected variables except cases
@@ -117,7 +126,7 @@ multi_ggplot(p5,p6 ,cols = 2)
 ```
 + ##### Figure caption: Plot of model simulation with no age structure but seasonal forcing of transmission parameter alone.
 
-#### 4. Simulating the model with no age structure by imposing seasonal forcing on both the transmission of the bacteria and the risk of disease among colonized individuals.
+### 4. Simulating the model with no age structure by imposing seasonal forcing on both the transmission of the bacteria and the risk of disease among colonized individuals.
 ```{r echo=TRUE}
 sim4 = sample_sim(epsilon_a = 0.1, epsilon_b = 0.1, forcing_invasion = TRUE, nyears = 5, age_structured = FALSE)
 # subset model output and choose variables to plot.
@@ -125,7 +134,7 @@ melt_sim4 =  melt_any_data.frame(sim4, "time", c("Susc", "Carrier", "Recov"))
 melt_sim4_cases = melt_any_data.frame(sim4, "time", c("newI", "Ill"))
 ```
 
-```{r echo=FALSE, fig.width=11, fig.height=4, fig.align='center'}
+```{r echo=FALSE, fig.width=11, fig.height=4, fig.align='center', cache=FALSE}
 
 # Plot simulations
 # Plot selected variables except cases
@@ -143,7 +152,194 @@ multi_ggplot(p7,p8 ,cols = 2)
 + ##### Figure caption: Plot of model simulation with no age structure but seasonal forcing of both transmission and invasion parameter.
 
 
-### Data visualisation : Hyperendemic incidence data.
+### 5. Simulating the SCIRS model which incorporate an age-structure of the population. The age groups considered were:
+
++ `[0-4]`, `[5-12]`, `[13-19]`, `20+`. 
++ We first simulated this age structured model with a WAIFW matrice that represent the identity matrice (a force of infection matrice which values are `0` except on it diagonal which have the value `1`.
++ This is to crosscheck that the age structured SCIRS model which incorporate the 4 age groups still provide an overall incidence
+similar to that of the model with no age structure. The real estimates of the matrice of the age specific force of infection will be used instead of the identity matrice at a letter stage after ensuring that our implementation of the age-structured model is adequate.
+
++ #### Assuming no seasonal forcing of the transmission and invasion parameters.
+
+```{r  echo=TRUE, message=TRUE}
+insert_age_structure = TRUE; heterogenous_mixing = FALSE 
+# load the model parameters file again to account for the value of the insert_age_structure global variable.
+source('R/models_parameters.R')
+sim5 = sample_sim(epsilon_a = 0, epsilon_b = 0, forcing_invasion = FALSE, nyears = 5, age_structured = TRUE)
+# subset model output and choose variables to plot.
+sim5<-add_row_totals_per_model_variable(sim5)
+# melt age specific estimates
+melt_sim5_carriers =  melt_any_data.frame(sim5, "time", c("Carrier1", "Carrier2", "Carrier3", "Carrier4", "total_Carrier"))
+melt_sim5_new_cases = melt_any_data.frame(sim5, "time", c("newI1", "newI2", "newI3", "newI4", "total_newI"))
+melt_sim5_cases_prevalence = melt_any_data.frame(sim5, "time", c("Ill1", "Ill2", "Ill3", "Ill4", "total_Ill"))
+
+#tail(melt_sim5_carriers,3) ; tail(melt_sim5_new_cases,3) ; tail(melt_sim5_cases_prevalence,3)
+
+```
+
+
+```{r echo=FALSE, fig.width=10, fig.height=8, fig.align='center', cache=FALSE}
+
+# Plot simulations
+# Plot selected variables
+# Age specific number of new_cases
+p9<-ggplot_sim_output(sim_output_melt = melt_sim5_new_cases, time_step = year, tick_label_evry = 1)
+# Age specific number of prevalent cases.
+p10<-ggplot_sim_output(sim_output_melt = melt_sim5_cases_prevalence, time_step = year, tick_label_evry = 1)
+# Age specific number of Carriers
+p11<-ggplot_sim_output(sim_output_melt = melt_sim5_carriers, time_step = year, tick_label_evry = 1)
+# output the plots p1 and p2 in a two column display
+multi_ggplot(p9,p10,p11 ,cols = 2)
+
+```
+
+```{r}
+
+```
+
++ ##### Figure Caption: Sample simulation of the age structured SCIRS when neither of the invasion and transmission parameters are seasonally forced. 
+Age distribution of the 4 age groups are accounted for, but the matrice of the age-specific force of infection is not formaly included yet.
+
+
++ #### Assuming seasonal forcing of the invasion parameter alone.
+
+```{r  echo=TRUE, message=TRUE}
+insert_age_structure = TRUE; heterogenous_mixing = FALSE 
+# load the model parameters file again to account for the value of the insert_age_structure global variable.
+source('R/models_parameters.R')
+sim6 = sample_sim(epsilon_a = 0.1, epsilon_b = 0, forcing_invasion = TRUE, nyears = 5, age_structured = TRUE)
+# subset model output and choose variables to plot.
+sim6<-add_row_totals_per_model_variable(sim6)
+# melt age specific estimates
+melt_sim6_carriers =  melt_any_data.frame(sim6, "time", c("Carrier1", "Carrier2", "Carrier3", "Carrier4", "total_Carrier"))
+melt_sim6_new_cases = melt_any_data.frame(sim6, "time", c("newI1", "newI2", "newI3", "newI4", "total_newI"))
+melt_sim6_cases_prevalence = melt_any_data.frame(sim6, "time", c("Ill1", "Ill2", "Ill3", "Ill4", "total_Ill"))
+
+#tail(melt_sim5_carriers,3) ; tail(melt_sim5_new_cases,3) ; tail(melt_sim5_cases_prevalence,3)
+
+```
+
+
+```{r echo=FALSE, fig.width=10, fig.height=8, fig.align='center', cache=FALSE}
+
+# Plot simulations
+# Plot selected variables
+# Age specific number of new_cases
+p12<-ggplot_sim_output(sim_output_melt = melt_sim6_new_cases, time_step = year, tick_label_evry = 1)
+# Age specific number of prevalent cases.
+p13<-ggplot_sim_output(sim_output_melt = melt_sim6_cases_prevalence, time_step = year, tick_label_evry = 1)
+# Age specific number of Carriers
+p14<-ggplot_sim_output(sim_output_melt = melt_sim6_carriers, time_step = year, tick_label_evry = 1)
+# output the plots p1 and p2 in a two column display
+multi_ggplot(p12,p13,p14 ,cols = 2)
+
+```
+
+```{r}
+
+```
+
++ ##### Figure Caption: Sample simulation of the age structured SCIRS when the invasion parameter only is seasonaly forced.
+Age distribution of the 4 age groups are accounted for, but the matrice of the age-specific force of infection is not formaly included yet.
+
+
+
++ #### Assuming seasonal forcing of the transmission parameter alone.
+
+```{r  echo=TRUE, message=TRUE}
+insert_age_structure = TRUE; heterogenous_mixing = FALSE 
+# load the model parameters file again to account for the value of the insert_age_structure global variable.
+source('R/models_parameters.R')
+sim7 = sample_sim(epsilon_a = 0, epsilon_b = 0.1, forcing_invasion = FALSE, nyears = 5, age_structured = TRUE)
+# subset model output and choose variables to plot.
+sim7<-add_row_totals_per_model_variable(sim7)
+# melt age specific estimates
+melt_sim7_carriers =  melt_any_data.frame(sim7, "time", c("Carrier1", "Carrier2", "Carrier3", "Carrier4", "total_Carrier"))
+melt_sim7_new_cases = melt_any_data.frame(sim7, "time", c("newI1", "newI2", "newI3", "newI4", "total_newI"))
+melt_sim7_cases_prevalence = melt_any_data.frame(sim7, "time", c("Ill1", "Ill2", "Ill3", "Ill4", "total_Ill"))
+
+#tail(melt_sim5_carriers,3) ; tail(melt_sim5_new_cases,3) ; tail(melt_sim5_cases_prevalence,3)
+
+```
+
+
+```{r echo=FALSE, fig.width=10, fig.height=8, fig.align='center', cache=FALSE}
+
+# Plot simulations
+# Plot selected variables
+# Age specific number of new_cases
+p15<-ggplot_sim_output(sim_output_melt = melt_sim6_new_cases, time_step = year, tick_label_evry = 1)
+# Age specific number of prevalent cases.
+p16<-ggplot_sim_output(sim_output_melt = melt_sim6_cases_prevalence, time_step = year, tick_label_evry = 1)
+# Age specific number of Carriers
+p17<-ggplot_sim_output(sim_output_melt = melt_sim6_carriers, time_step = year, tick_label_evry = 1)
+# output the plots p1 and p2 in a two column display
+multi_ggplot(p15,p16,p17 ,cols = 2)
+
+```
+
+```{r}
+
+```
+
++ ##### Figure Caption: Sample simulation of the age structured SCIRS when the transmision parameter only is seasonaly forced.
+Age distribution of the 4 age groups are accounted for, but the matrice of the age-specific force of infection is not formaly included yet.
+
+
+
++ #### Assuming seasonal forcing of both the transmission and invasion parameters.
+
+```{r  echo=TRUE, message=TRUE}
+insert_age_structure = TRUE; heterogenous_mixing = FALSE 
+# load the model parameters file again to account for the value of the insert_age_structure global variable.
+source('R/models_parameters.R')
+sim7 = sample_sim(epsilon_a = 0.1, epsilon_b = 0.1, forcing_invasion = TRUE, nyears = 5, age_structured = TRUE)
+# subset model output and choose variables to plot.
+sim7<-add_row_totals_per_model_variable(sim7)
+# melt age specific estimates
+melt_sim7_carriers =  melt_any_data.frame(sim7, "time", c("Carrier1", "Carrier2", "Carrier3", "Carrier4", "total_Carrier"))
+melt_sim7_new_cases = melt_any_data.frame(sim7, "time", c("newI1", "newI2", "newI3", "newI4", "total_newI"))
+melt_sim7_cases_prevalence = melt_any_data.frame(sim7, "time", c("Ill1", "Ill2", "Ill3", "Ill4", "total_Ill"))
+
+```
+
+
+```{r echo=FALSE, fig.width=10, fig.height=6, fig.align='center', cache=FALSE}
+
+# Plot simulations
+# Plot selected variables
+# Age specific number of new_cases
+p15<-ggplot_sim_output(sim_output_melt = melt_sim7_new_cases, time_step = year, tick_label_evry = 1)
+# Age specific number of prevalent cases.
+p16<-ggplot_sim_output(sim_output_melt = melt_sim7_cases_prevalence, time_step = year, tick_label_evry = 1)
+# Age specific number of Carriers
+p17<-ggplot_sim_output(sim_output_melt = melt_sim7_carriers, time_step = year, tick_label_evry = 1)
+# output the plots p1 and p2 in a two column display
+multi_ggplot(p15,p16,p17 ,cols = 2)
+
+```
+
+```{r}
+
+```
+
++ ##### Figure Caption: Sample simulation of the age structured SCIRS when both the transmision and invasion parameters are seasonaly forced.
+Age distribution of the 4 age groups are accounted for, but the estimated matrice of the age-specific force of infection is not formaly included yet.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Data visualisation : Hyperendemic incidence data.
 
 The data presented here are from health centers accross 4 sanitary districts of Burkina Faso and are included in this analysis because they had complete weekly notification data during at least one year. As we fitted our models on a yearly basis, a health center can contribute 1, 2, 3 or more  health center years in the analysis. 
 
