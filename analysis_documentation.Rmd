@@ -1,0 +1,163 @@
+---
+title: "Main documentation"
+author: "Thibaut Koutangni"
+date: "October 2016"
+output: 
+    html_document:
+        fig.width: 10
+        fig.height: 8
+---
+
+This document present outputs of my models simulations.
+It allow reproducing the results of my modelling work.
+I'm happy to clarify and discuss any question you have with regard to the output.
+my email: <koutibaut@yahoo.fr> if needed.
+
+
+**Notice!! : **
+The file `run_first.R` in the R/ folder contains, functions, packages, and script needed to reproduce the analysis and must be sourced first. (see code chunck named: `sourcefirst`)
+
+```{r setup, cache=FALSE, include=FALSE}
+library(knitr)
+output <- opts_knit$get("rmarkdown.pandoc.to")
+if (output=="html") opts_chunk$set(fig.width=10, fig.height=8, message=FALSE, warning=FALSE, results="asis", cache = TRUE)
+#if (output=="docx") opts_chunk$set(fig.width=6,  fig.height=6)
+```
+
+
+```{r sourcefirst, include=TRUE, cache=FALSE, message=FALSE, results="hide"}
+# source the script that load, the packages, functions, and data needed for 
+# the analysis
+source('R/run_first.R')
+```
+
+### Sample simulations of the SCIRS Model
+
+#### 1. Simulating the model with no forcing and no age structure
+
+```{r echo=TRUE}
+
+# simulate model
+sim1 = sample_sim(epsilon_a = 0.0, epsilon_b = 0.0, forcing_invasion = FALSE, nyears = 5, age_structured = FALSE)
+# subset model output and choose variables to plot.
+melt_sim1 =  melt_any_data.frame(sim1, "time", c("Susc", "Carrier", "Recov"))
+melt_sim1_cases = melt_any_data.frame(sim1, "time", c("newI", "Ill"))
+
+```
+
+```{r echo=FALSE, fig.width=11, fig.height=4, fig.align='center'}
+
+# Plot simulations
+# Plot selected variables except cases
+p1<-ggplot_sim_output(sim_output_melt = melt_sim1, time_step = year, tick_label_evry = 1)
+# plot cases (iIncidence (NewI), and prevalence (Ill)) separetely with prevalence of cases
+p2<-ggplot_sim_output(sim_output_melt = melt_sim1_cases, time_step = year, tick_label_evry = 1)
+# output the plots p1 and p2 in a two column display
+multi_ggplot(p1,p2 ,cols = 2)
+#plotAllModelVariables(sim1)
+```
+
+```{r echo=FALSE}
+# leave this intentionaly blank
+```
++ ##### Figure caption: Plot of model simulation with no forcing and no age structure.
+
+
+#### 2. Simulating the model with no age structure by imposing seasonal forcing on the risk of disease among colonized individuals (i.e., the invasion rate)
+```{r echo=TRUE}
+
+sim2 = sample_sim(epsilon_a = 0.1, epsilon_b = 0.0, forcing_invasion = TRUE, nyears = 5, age_structured = FALSE)
+# subset model output and choose variables to plot.
+melt_sim2 =  melt_any_data.frame(sim2, "time", c("Susc", "Carrier", "Recov"))
+melt_sim2_cases = melt_any_data.frame(sim2, "time", c("newI", "Ill"))
+
+```
+
+```{r echo=FALSE, fig.width=11, fig.height=4, fig.align='center'}
+
+# Plot simulations
+# Plot selected variables except cases
+p3<-ggplot_sim_output(sim_output_melt = melt_sim2, time_step = year, tick_label_evry = 1)
+# plot cases (iIncidence (NewI), and prevalence (Ill)) separetely with prevalence of cases
+p4<-ggplot_sim_output(sim_output_melt = melt_sim2_cases, time_step = year, tick_label_evry = 1)
+# output the plots p1 and p2 in a two column display
+multi_ggplot(p3,p4 ,cols = 2)
+
+```
+
+```{r echo=FALSE}
+# leave intentionally blank for formating purpose
+```
+
++ ##### Figure caption: Plot of model simulation with no age structure but seasonal forcing of invasion parameter alone.
+
+#### 3. Simulating the model with no age structure by imposing seasonal forcing on the transmission of the bacteria
+```{r echo=TRUE}
+sim3 = sample_sim(epsilon_a = 0.0, epsilon_b = 0.1, forcing_invasion = FALSE, nyears = 5, age_structured = FALSE)
+# subset model output and choose variables to plot.
+melt_sim3 =  melt_any_data.frame(sim3, "time", c("Susc", "Carrier", "Recov"))
+melt_sim3_cases = melt_any_data.frame(sim3, "time", c("newI", "Ill"))
+
+```
+
+```{r echo=FALSE, fig.width=11, fig.height=4, fig.align='center'}
+
+# Plot simulations
+# Plot selected variables except cases
+p5<-ggplot_sim_output(sim_output_melt = melt_sim3, time_step = year, tick_label_evry = 1)
+# plot cases (iIncidence (NewI), and prevalence (Ill)) separetely with prevalence of cases
+p6<-ggplot_sim_output(sim_output_melt = melt_sim3_cases, time_step = year, tick_label_evry = 1)
+# output the plots p1 and p2 in a two column display
+multi_ggplot(p5,p6 ,cols = 2)
+
+```
+
+```{r echo=FALSE}
+# leave intentionally blank for formating purpose
+```
++ ##### Figure caption: Plot of model simulation with no age structure but seasonal forcing of transmission parameter alone.
+
+#### 4. Simulating the model with no age structure by imposing seasonal forcing on both the transmission of the bacteria and the risk of disease among colonized individuals.
+```{r echo=TRUE}
+sim4 = sample_sim(epsilon_a = 0.1, epsilon_b = 0.1, forcing_invasion = TRUE, nyears = 5, age_structured = FALSE)
+# subset model output and choose variables to plot.
+melt_sim4 =  melt_any_data.frame(sim4, "time", c("Susc", "Carrier", "Recov"))
+melt_sim4_cases = melt_any_data.frame(sim4, "time", c("newI", "Ill"))
+```
+
+```{r echo=FALSE, fig.width=11, fig.height=4, fig.align='center'}
+
+# Plot simulations
+# Plot selected variables except cases
+p7<-ggplot_sim_output(sim_output_melt = melt_sim4, time_step = year, tick_label_evry = 1)
+# plot cases (iIncidence (NewI), and prevalence (Ill)) separetely with prevalence of cases
+p8<-ggplot_sim_output(sim_output_melt = melt_sim4_cases, time_step = year, tick_label_evry = 1)
+# output the plots p1 and p2 in a two column display
+multi_ggplot(p7,p8 ,cols = 2)
+
+```
+
+```{r echo=FALSE}
+# leave intentionally blank for formating purpose
+```
++ ##### Figure caption: Plot of model simulation with no age structure but seasonal forcing of both transmission and invasion parameter.
+
+
+### Data visualisation : Hyperendemic incidence data.
+
+The data presented here are from health centers accross 4 sanitary districts of Burkina Faso and are included in this analysis because they had complete weekly notification data during at least one year. As we fitted our models on a yearly basis, a health center can contribute 1, 2, 3 or more  health center years in the analysis. 
+
+```{r, message=FALSE, results="hide", cache=FALSE, fig.height=10}
+#setwd(paste(getwd(),'R', sep = "/"))
+#source('R/hyperendemic_data_visualisation.R', echo = TRUE)
+source("R/plot_all_non_epi_data.R", echo = TRUE)
+```
+
+### Model calibration and parameter optimisation.
+
+```{r }
+    
+```
+
+
+
