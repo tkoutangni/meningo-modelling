@@ -40,8 +40,8 @@ if(doPlot){
 ## IMPORTANT ! It is necessary to set 
 ## is_a0Constant = FALSE or TRUE depending if we want the invasion rate to be constant or not
 ## By default the value is FALSE. Which mean the invasion rate can vary seasonaly by a factor of
-## 10 - fold to 100-fold. When set to TRUE it mean the invasion rate is unforced but its value
-## is 10*a0. 
+## 1 - fold to 100-fold. When set to TRUE it mean the invasion rate is unforced but its value
+## is a0. 
 ## It value can be change between TRUE of FALSE in any script as long as the variable 
 ## is_a0Constant scope is the global environment and must be specified before runing the year specific parameters estimates.
 
@@ -53,8 +53,7 @@ if(doPlot){
 
 # file.exists("../data/processed_data/a0ForcEstimates.RData") ## returns TRUE
 
-if(!file.exists("a0ForcEstimates.RData")){ # here we are checking in the current working directory
-    # ...meningoafrica-code/R
+if(!file.exists("data/processed_data/new_processed_february_2016/a0ForcEstimates.RData")){ 
     
     # seasonal forcing of invasion rate alone.
     
@@ -193,8 +192,8 @@ if(!file.exists("a0ForcEstimates.RData")){ # here we are checking in the current
                                                 nloptrAlgorithm = "NLOPT_LN_COBYLA",
                                                 n_iter = 10000)
 }else{
-    cat("\n The file \"a0ForcEstimates.RData\" already exist \n in :",getwd(), 
-        "\n Please delete it first in order to reestimate parameters")
+        cat("\n The file \"a0ForcEstimates.RData\" already exist \n in :",paste(getwd(),"data/processed_data/new_processed_february_2016/", sep="/"), 
+            "\n Please delete/or rename it first in order to reestimate parameters")
 } #end of if -else conditional statement for force_a0 estimates. 
 
 save(seguenNonEpiForc_a0_2006,
@@ -210,14 +209,13 @@ save(seguenNonEpiForc_a0_2006,
      EstimNonEpiLenaForc_a0_2007,
      EstimNonEpiKvigueForc_a0_2008,
      EstimNonEpiKvigueForc_a0_2010,
-     file="../data/processed_data/new_processed_february_2016/a0ForcEstimates.RData")
+     file="data/processed_data/new_processed_february_2016/a0ForcEstimates.RData")
 
 #=============================================================
 ## Parameters estimates when only transmission rate is forced.
 #=============================================================
 
-if(!file.exists("beta0ForcEstimates.RData")){ # here we are checking in the current working directory
-    # ...meningoafrica-code/R
+if(!file.exists("data/processed_data/new_processed_february_2016/beta0ForcEstimates.RData")){ 
     
     # seasonal forcing of invasion rate alone.
     
@@ -356,7 +354,7 @@ if(!file.exists("beta0ForcEstimates.RData")){ # here we are checking in the curr
                                                    nloptrAlgorithm = "NLOPT_LN_COBYLA",
                                                    n_iter = 10000)
 }else{
-    cat("\n The file \"beta0ForcEstimates.RData\" already exist \n in :",getwd(), 
+    cat("\n The file \"beta0ForcEstimates.RData\" already exist \n in :",paste(getwd(),"data/processed_data/new_processed_february_2016/", sep="/"), 
         "\n Please delete it first in order to reestimate parameters")
 } #end of if -else conditional statement for force_beta0 estimates. 
 
@@ -375,7 +373,7 @@ save(seguenNonEpiForc_beta0_2006,
      EstimNonEpiLenaForc_beta0_2007,
      EstimNonEpiKvigueForc_beta0_2008,
      EstimNonEpiKvigueForc_beta0_2010,
-     file="../data/processed_data/new_processed_february_2016/beta0ForcEstimates.RData")
+     file="data/processed_data/new_processed_february_2016/beta0ForcEstimates.RData")
 
 
 #=============================================================
@@ -383,9 +381,7 @@ save(seguenNonEpiForc_beta0_2006,
 # forced.
 #=============================================================
 
-if(!file.exists("a0_beta0_ForcEstimates.RData")){ # here we are checking in the current working directory
-    # ...meningoafrica-code/R
-    
+if(!file.exists("data/processed_data/new_processed_february_2016/a0_beta0_ForcEstimates.RData")){ 
     # seasonal forcing of invasion rate alone.
     
     # DISTRICT OF SEGUENEGA ( Id = 1)
@@ -523,7 +519,7 @@ if(!file.exists("a0_beta0_ForcEstimates.RData")){ # here we are checking in the 
                                                       nloptrAlgorithm = "NLOPT_LN_COBYLA",
                                                       n_iter = 10000)
 }else{
-    cat("\n The file \"a0_beta0_ForcEstimates.RData\" already exist \n in :",getwd(), 
+    cat("\n The file \"a0_beta0_ForcEstimates.RData\" already exist \n in :",paste(getwd(),"data/processed_data/new_processed_february_2016/", sep="/"), 
         "\n Please delete it first in order to reestimate parameters")
 } #end of if -else conditional statement for force_beta0 estimates. 
 
@@ -542,7 +538,7 @@ save(seguenNonEpiForc_a0_beta0_2006,
      EstimNonEpiLenaForc_a0_beta0_2007,
      EstimNonEpiKvigueForc_a0_beta0_2008,
      EstimNonEpiKvigueForc_a0_beta0_2010,
-     file="../data/processed_data/new_processed_february_2016/a0_beta0_ForcEstimates.RData") 
+     file="data/processed_data/new_processed_february_2016/a0_beta0_ForcEstimates.RData") 
 
 
 ############################################################################
@@ -567,7 +563,7 @@ a0ForcEstimates_matrice = rbind(
     EstimNonEpiKvigueForc_a0_2010)
 
 save(a0ForcEstimates_matrice,
-     file = "../data/processed_data/new_processed_february_2016/a0ForcEstimates_matrice.RData")
+     file = "data/processed_data/new_processed_february_2016/a0ForcEstimates_matrice.RData")
 
 
 # Model with forcing of the transmission alone. 
@@ -589,7 +585,7 @@ beta0ForcEstimates_matrice = rbind(
     EstimNonEpiKvigueForc_beta0_2010)
 
 save(beta0ForcEstimates_matrice,
-     file = "../data/processed_data/new_processed_february_2016/beta0ForcEstimates_matrice.RData")
+     file = "data/processed_data/new_processed_february_2016/beta0ForcEstimates_matrice.RData")
 
 
 # Model with forcing of both the transmission and invasion rate. 
@@ -611,5 +607,5 @@ a0_beta0_ForcEstimates_matrice = rbind(
     EstimNonEpiKvigueForc_a0_beta0_2010)
 
 save(a0_beta0_ForcEstimates_matrice,
-     file = "../data/processed_data/new_processed_february_2016/a0_beta0_ForcEstimates_matrice.RData")
+     file = "data/processed_data/new_processed_february_2016/a0_beta0_ForcEstimates_matrice.RData")
 

@@ -1,7 +1,7 @@
 # now need to print all plots to a single pdf
 base_text = "for 64 health center-years with complete data, across four health distrits of \nBurkina faso (2004-2010)."
 
-pdf(file = "../figs/final_figs/hyperendemic_trajectory_matching_plots.pdf")
+pdf(file = "figs/final_figs/hyperendemic_trajectory_matching_plots.pdf")
 
 
 layout(1) # set graphical area for text display

@@ -5,7 +5,7 @@
 # setting up some initial conditions for the SCIRS_harmonic model
 ##################################################################################
 ##################################################################################
-# sample initial values for numerical simulation of the model.
+# Initial values for numerical simulation of the model.
 # 
 insert_age_structure = insert_age_structure # change to TRUE to run age structured
 #model
@@ -15,13 +15,13 @@ heterogenous_mixing = heterogenous_mixing # turn this to TRUE to include actual
 
 nage = 4 # 4 age groupes  defined as <5 years; 5-12 years, 13-19, and 20+ years
 # the estimate WAIFW matrix by tartoff et al in dry season with minor epidemics
-#npop = non_epi_health_center_year_population_size$seguen_2006_population_size$`csps bema`
-npop = 1e+05
+npop = non_epi_health_center_year_population_size$seguen_2006_population_size$`csps bema`
+#npop = 1e+05
 #population size (if proportion , model state variables should add up to 1
 #fimmune   = 0.2 # fraction of population immune
 
 if(insert_age_structure){
-    age_group_fraction = c(0.1871386, 0.1554741, 0.2324747, 0.4249126)
+    age_group_fraction = c(0.1871386, 0.1554741, 0.2324747, 0.4249126) # obtained from age distribution of burkina faso population  according to the 4 age groups defined by Tartof et al. (see below for details)
     f = age_group_fraction
     #f = c(0.25,0.25, 0.25, 0.25) # assuming age classes, represent each 25% of the population.
     N =  npop*f  # Actual proportion/number of the total population in each age class
@@ -193,20 +193,20 @@ if (initialGuessValues) {
     
     # params for model calibration with hyperendemic data.
     guess_lower_bound = c(
-        beta0 = 0.00001, alpha = 1 / year, phi = 0.2 / year, Susc0 = 0, CarrierProp =
-            0, teta = 91, epsilon_a = 0,epsilon_b = 0,a0 = 0
+        beta0 = 0.00001, alpha = 1 / year, phi = 0.2 / year, Susc0 = 1, CarrierProp =
+            1, teta = 91, epsilon_a = 0,epsilon_b = 0,a0 = 0
     )
     guess_upper_bound = c(
-        beta0 = +Inf, alpha = 52 / year, phi = 12 / year, Susc0 = 1, CarrierProp =
-            1, teta = 112, epsilon_a = 1,epsilon_b = 1,a0 = 1
+        beta0 = +Inf, alpha = 52 / year, phi = 12 / year, Susc0 = N, CarrierProp =
+            N, teta = 112, epsilon_a = 1,epsilon_b = 1,a0 = 1
     )
     
     initial_guess_parms = c(
         beta0 = 0.5,
         alpha = 12 / year,
         phi = 4 / year,
-        Susc0 = 0.5,
-        CarrierProp = 0.01,
+        Susc0 = 0.5*N,
+        CarrierProp = 0.01*N,
         teta = 97,
         epsilon_a = 0,
         epsilon_b = 0,

@@ -15,8 +15,12 @@ source("R/GeneralDataLoading.R") # load data
 source("R/data.cleaning.R")      # clean data
 source("R/data_simple_mooving_week_average.R")
 
-##### =============== Models fitting ===========
+##### =============== Models fitting algo ===========
 source("R/yearSpecificFittingAlgo_nov_2015.R",verbose = FALSE)
+
+##### Get age distribution of the burkina faso population according
+##### to years.
+source("R/get_population_age_data.R") 
 
 ### end loading.
 cat('\n Finished loading functions, parameters, and data \n')

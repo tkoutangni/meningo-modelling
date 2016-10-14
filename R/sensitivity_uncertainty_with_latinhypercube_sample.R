@@ -83,7 +83,7 @@ parRangesForce_a0andBeta0$baseline_value<-(parRangesForce_a0andBeta0$min+parRang
 #=================================================================
 # generate latin hypercube samples for each models.
 #=================================================================
-sampleSize = 100
+sampleSize = 1000
 
 # generate latin hypercube sample for model M1
 latinhyper_sample_parms_a0force = Latinhyper(parRangesForce_a0[,c("min","max")], sampleSize)

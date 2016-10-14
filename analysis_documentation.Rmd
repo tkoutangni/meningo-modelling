@@ -1,17 +1,17 @@
 ---
 title: "Analysis documentation"
 author: "Thibaut Koutangni"
-date: "October 2016"
+date: "October 2016 (Last update)"
 output:
-  word_document: default
   html_document:
     fig.height: 8
     fig.width: 10
+  word_document: default
 ---
 
 This document present outputs of my models simulations.
 It allow reproducing the results of my modelling work.
-I'm happy to clarify and discuss any question you have with regard to the output.
+I'm happy to discuss any question you have with regard to the output.
 my email: <koutibaut@yahoo.fr> if needed.
 
 
@@ -21,7 +21,7 @@ The file `run_first.R` in the R/ folder contains, functions, packages, and scrip
 ```{r setup, cache=FALSE, include=FALSE}
 library(knitr)
 output <- opts_knit$get("rmarkdown.pandoc.to")
-if (output=="html") opts_chunk$set(fig.width=10, fig.height=8, message=FALSE, warning=FALSE, results="markup", cache = TRUE, autodep = TRUE)
+if (output=="html") opts_chunk$set(fig.width=10, fig.height=8, message=FALSE, warning=FALSE, results="markup", cache = FALSE, autodep = TRUE)
 if (output=="docx") opts_chunk$set(fig.width=6,  fig.height=6)
 dep_auto()
 ```
@@ -32,7 +32,7 @@ dep_auto()
 # the analysis
 source('R/run_first.R')
 ```
-
+# Part 1.
 ## Sample simulations of the SCIRS Model
 
 ### 1. Simulating the model with no forcing and no age structure.
@@ -331,14 +331,7 @@ Age distribution of the 4 age groups are accounted for, but the estimated matric
 
 
 
-
-
-
-
-
-
-
-
+# Part 2.
 ## Data visualisation : Hyperendemic incidence data.
 
 The data presented here are from health centers accross 4 sanitary districts of Burkina Faso and are included in this analysis because they had complete weekly notification data during at least one year. As we fitted our models on a yearly basis, a health center can contribute 1, 2, 3 or more  health center years in the analysis. 
@@ -349,7 +342,8 @@ The data presented here are from health centers accross 4 sanitary districts of 
 source("R/plot_all_non_epi_data.R", echo = TRUE)
 ```
 
-### Model calibration and parameter optimisation.
+# Part 3
+### Models calibration and parameter optimisation.
 
 ```{r }
     

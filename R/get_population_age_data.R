@@ -1,4 +1,3 @@
-source('rpackages.R')
 
 get_population_age_stat_data <- function(country, year) {
     # @country = should be FIPS_country_codes as listed at:
@@ -44,7 +43,7 @@ gg_prop <- ggplot(data = data.frame()
 # getting and ploting age distribution data.
  
 ####################################
-burkina_age_data = get_population_age_stat_data(country = "UV", 2004)
+burkina_age_data = get_population_age_stat_data(country = "UV", 2006)
 burkina_age_data$`Age class`<-NA
 burkina_age_data[c("0":"4")+1,]$`Age class`<-"[0-4]"
 burkina_age_data[c("5":"12")+1,]$`Age class`<-"[5-12]"
@@ -67,7 +66,7 @@ burkina_age_data_melt = melt(data_by_age_group, value.name = "Population", id.va
 
 
 
-p1<-gg_prop %+% subset(burkina_age_data_melt, variable=="Both sex proportion")
+#p1<-gg_prop %+% subset(burkina_age_data_melt, variable=="Both sex proportion")
 
-multi_ggplot(p1,p1, cols = 2)
+#multi_ggplot(p1,p1, cols = 2)
 
