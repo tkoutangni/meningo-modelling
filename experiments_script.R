@@ -1,3 +1,4 @@
+insert_age_structure = FALSE; heterogenous_mixing=FALSE
 source("R/run_first.R")
 source("R/models_parameters.R")
 
@@ -9,7 +10,7 @@ source("R/models_parameters.R")
 # Many lines of code were needed to be changed especially in the parameters file , the fitting 
 # algorithm file. and the model equations file.
 
-# Resultl of implementation of the solution to probleme 1 produced the correct output expected
+# Result of implementation of the solution to probleme 1 produced the correct output expected
 
 # Fitting the modified model with no age structure to one health center year for experimental purpose
 # The modifications included in the initial model scripts include:
