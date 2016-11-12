@@ -16,6 +16,18 @@
 # Function to fit model without age structure using least-square
 # curve fitting approach
 # 
+# 
+negLogLik = function(){
+        # function for maximizing the log likelihood
+        poissonLoglik = sum(dpois(
+                x = round(as.numeric(out$incid)),lambda = round(as.numeric(obs.data$incid)),log = F
+        ))
+        # take the negative loglikelihood in order to minimize the function toward 0.
+        negLogLik = (-poissonLoglik)
+        
+        cat("\n Negative Log-Likelihood = ",negLogLik, "\n")
+        return(negLogLik)
+}
 
 ###========================================
 
@@ -86,11 +98,22 @@ yearSpecFit<-function(district_id, district_year_data, year_now,
                                 ## Compute and return model cost (sum of squared residuals)
                                 #newobs=obs.data
                                 #newobs$incid=newobs$incid^2
-                                mc = modCost(
-                                        obs = obs.data, model = out, weight = "std"
-                                ) #, weight="mean", weight = "std"
+                                #print(cbind(round(obs.data), round(out)))
+                                
+                                #mc = modCost(
+                                        #obs = obs.data, model = out, weight = "std"
+                                #) #, weight="mean", weight = "std"
                                 #print(mc$model)
-                                return(mc$model)
+                                #return(mc$model)
+                                #=================
+                                poissonLoglik = sum(dpois(
+                                        x = round(as.numeric(out$incid)),lambda = round(as.numeric(obs.data$incid)),log = F
+                                ))
+                                # take the negative loglikelihood in order to minimize the function toward 0.
+                                negLogLik = (-poissonLoglik)
+                                
+                                cat("\n Negative Log-Likelihood = ",negLogLik, "\n")
+                                return(negLogLik)
                         } # end objective function.
                 
 
@@ -543,21 +566,27 @@ mleYearSpecFit <-
                                                 sim.SCIRS_harmonic(inits,current_parms_combination,nd = nbYearSimulated *
                                                                            year)
                                         out <-
-                                                subset(out, select = c(time,newI))
+                                                subset(out, select = c(time,newI, Carrier))
+                                        out=out[1:length(time.vector),]
                                         # make the prediction back to count number instead of decimal number by standardizing the incidence
                                         # per 100,000 inhabitant for use by poissoon likelihood comupation.
                                         #out$newI = floor(out$newI*per_100000)
                                         
-                                        predict = tail(out$newI,length(time.vector))
-                                        out = data.frame(time = time.vector, incid = predict)  #predict^2
+                                        predict = out$newI
+                                        out = data.frame(time = time.vector, incid = out$newI, Carrier=out$Carrier)  #predict^2
+                                        #print(cbind("model"= log(out$incid), "data" = log(obs.data$incid)))
+                                        print(cbind("model"= round(out$incid,2), 
+                                                    "data" = round(obs.data$incid,2),
+                                                    "carrier"=round(out$Carrier,2)))
+                                        
                                         # function for maximizing the log likelihood
                                         poissonLoglik = sum(dpois(
-                                                x = as.numeric(out$newI),lambda = as.numeric(obs.data$incid),log = TRUE
+                                        x = round(as.numeric(out$incid)),lambda = round(as.numeric(obs.data$incid)),log = F
                                         ))
                                         # take the negative loglikelihood in order to minimize the function toward 0.
                                         negLogLik = (-poissonLoglik)
                                         
-                                        cat("\n Negative Log-Likelihood = ",negLogLik)
+                                        cat("\n Negative Log-Likelihood = ",negLogLik, "\n")
                                         return(negLogLik)
                                 } # end objective function.
                         
@@ -664,7 +693,7 @@ mleYearSpecFit <-
                                                 # See ?minuslogl for algo options. Most algo defined in the optim package work.
                                                 # eg. "L-BFGS-B"
                                                 Fit <- mle2(
-                                                        minuslogl = Objective_max_likelihood, start = guess_parms,
+                                                        minuslogl = Objective_max_likelihood, start = guess_parms, optimizer = "optim",
                                                         method = algorithm, lower = lbound, upper = ubound,       
                                                         trace = TRUE, vecpar = TRUE
                                                 )

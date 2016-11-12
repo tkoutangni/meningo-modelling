@@ -2,6 +2,11 @@ insert_age_structure = FALSE; heterogenous_mixing=FALSE
 source("R/run_first.R")
 source("R/models_parameters.R")
 
+# replace NA at the begining and end of the data time series by 0
+# 
+seguen_2006[1,]<-0
+seguen_2006[dim(seguen_2006)[1],]<-0
+
 # Probleme 1: Currently my code is designed to fit the weekly proportion of new cases in the population not weekly counts of new cases.
 
 #Solution: Change my code files where appropriate to make the models fit weekly case counts
@@ -19,6 +24,7 @@ source("R/models_parameters.R")
 # before model calibration. 
 
 # model calibration with seasonality of invasion parameter only.
+
 
 is_a0Constant = FALSE; insert_age_structure = FALSE; heterogenous_mixing=FALSE;
 seguenNonEpiForc_a0_2006_bema = yearSpecFit(district_id=1,
@@ -39,7 +45,7 @@ seguenNonEpiForc_a0_2006_bema = yearSpecFit(district_id=1,
                                             addCarriageConstrain = TRUE, show_plot = TRUE,
                                             # NLOPT_LN_BOBYQA or NLOPT_LN_COBYLA
                                             nloptrAlgorithm = "NLOPT_LN_COBYLA",  
-                                            n_iter = 10000)
+                                            n_iter = 1000)
 
 # Calibration with seasonality of both transmission and invasion parameters.
 is_a0Constant = TRUE; insert_age_structure = FALSE; heterogenous_mixing=FALSE;
@@ -50,7 +56,7 @@ seguenNonEpiForc_a0_2006_bema = yearSpecFit(district_id=1,
                                             addCarriageConstrain = TRUE, show_plot = TRUE,
                                             # NLOPT_LN_BOBYQA or NLOPT_LN_COBYLA
                                             nloptrAlgorithm = "NLOPT_LN_COBYLA",  
-                                            n_iter = 10000)
+                                            n_iter = 1000)
 
 # Probleme 2: Currently my fitting algorithm is designed to use the least squared approach
 # for parameter estimation by minimazing the error rate between model predictions and observed data.
