@@ -25,7 +25,7 @@ seguen_2006[dim(seguen_2006)[1],]<-0
 
 # model calibration with seasonality of invasion parameter only.
 
-
+N = seguen_2006_population_size$`csps bema`
 is_a0Constant = FALSE; insert_age_structure = FALSE; heterogenous_mixing=FALSE;
 seguenNonEpiForc_a0_2006_bema = yearSpecFit(district_id=1,
                                        district_year_data = seguen_2006, 

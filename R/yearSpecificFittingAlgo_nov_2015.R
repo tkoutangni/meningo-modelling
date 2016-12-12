@@ -15,9 +15,9 @@
 
 # Function to fit model without age structure using least-square
 # curve fitting approach
-# 
-# 
-negLogLik = function(){
+#
+#
+negLogLik = function() {
         # function for maximizing the log likelihood
         poissonLoglik = sum(dpois(
                 x = round(as.numeric(out$incid)),lambda = round(as.numeric(obs.data$incid)),log = F
@@ -31,7 +31,7 @@ negLogLik = function(){
 
 ###========================================
 
-yearSpecFit<-function(district_id, district_year_data, year_now,
+yearSpecFit <- function(district_id, district_year_data, year_now,
                         hc_vector,a0ForcingOnly,
                         beta0ForcingOnly,
                         addCarriageConstrain, # must be a boolean
@@ -87,36 +87,51 @@ yearSpecFit<-function(district_id, district_year_data, year_now,
                                 out <-
                                         subset(out, select = c(time,newI))
                                 predict = tail(out$newI,length(time.vector))
-                                # multiply newI which is case count when N is the actual population size and not 
+                                # multiply newI which is case count when N is the actual population size and not
                                 # considered as a proportion = 1
                                 #predict = predict/N[i]
                                 #print(predict)
                                 out = data.frame(time = time.vector, incid = predict)  #predict^2
-                                #matplot(cbind(obs.data$incid*1e+05,out$incid*1e+05), type=c("p","l"),pch=20,lwd=3,las=1,col=c("black","blue"),ylab="incid x100,000")
-                                #print(length(obs.data$incid))
-                                #print(length(out$incid))
-                                ## Compute and return model cost (sum of squared residuals)
-                                #newobs=obs.data
-                                #newobs$incid=newobs$incid^2
                                 #print(cbind(round(obs.data), round(out)))
                                 
-                                #mc = modCost(
-                                        #obs = obs.data, model = out, weight = "std"
-                                #) #, weight="mean", weight = "std"
-                                #print(mc$model)
-                                #return(mc$model)
-                                #=================
-                                poissonLoglik = sum(dpois(
-                                        x = round(as.numeric(out$incid)),lambda = round(as.numeric(obs.data$incid)),log = F
-                                ))
-                                # take the negative loglikelihood in order to minimize the function toward 0.
-                                negLogLik = (-poissonLoglik)
                                 
-                                cat("\n Negative Log-Likelihood = ",negLogLik, "\n")
-                                return(negLogLik)
+                                print(head(obs.data))
+                                print(head(out))
+                                
+                                mc = modCost(
+                                        obs = obs.data, model = out, weight = "std"
+                                ) #, weight="mean", weight = "std"
+                                cat("\n Model cost:", mc$model, "\n")
+                                
+                                # Get the weighted residuals
+                                Residuals = mc$residuals$res
+                                ll = suppressWarnings(dnorm(Residuals, 0, 1, log = TRUE))
+                                plot(ll, type="l", col="red")
+                                ll = sum(ll)
+                                minusll <- -ll
+                                
+                                cat("\n minusll = ", minusll)
+                                #plot(minusll, type="o", col="blue")
+                                #par(new =T)
+                                #points (minusll, col="red")
+                                
+                                minusllvector <-
+                                        vector(mode = "numeric")
+                                #plot(mc$residuals$res, type="l", col="blue")
+                                return(mc$model)
+                                #return(minusll)
+                                #=================
+                                #poissonLoglik = sum(dpois(
+                                #x = round(as.numeric(out$incid)),lambda = round(as.numeric(obs.data$incid)),log = F
+                                #))
+                                # take the negative loglikelihood in order to minimize the function toward 0.
+                                #negLogLik = (-poissonLoglik)
+                                
+                                #cat("\n Negative Log-Likelihood = ",negLogLik, "\n")
+                                #return(negLogLik)
                         } # end objective function.
                 
-
+                
                 
                 if (addCarriageConstrain) {
                         # inequality constraints function as an additional criteria to the Objective function
@@ -163,6 +178,7 @@ yearSpecFit<-function(district_id, district_year_data, year_now,
                 time.vector = c(coredata(ready_data$julian_day)) # the time vector at which to compare model to data
                 #head(time.vector)
                 obs.data = subset(ready_data,select = c(hcIndex,julian_day)) # pick current health center data
+                print(head(obs.data))
                 obs.data = data.frame(time = coredata(obs.data[,2]), incid = coredata(obs.data[,1]))
                 obs.data$incid <-
                         obs.data$incid * N[i]# multiply back with current hc population size to have case count
@@ -295,9 +311,9 @@ yearSpecFit<-function(district_id, district_year_data, year_now,
                                 par(mar = c(5,5,2,4), mfrow = c(2,3)) # plot margings and num of row and col
                         } #end if.
                         # prepare data and calibration results to plot
-                        fitted_model = (fitted_model/N[i])*per_100000
-                        obs.data$incid = (obs.data$incid/N[i])*per_100000
-                        carriageVector = (carriageVector/N[i])*1e+02
+                        fitted_model = (fitted_model / N[i]) * per_100000
+                        obs.data$incid = (obs.data$incid / N[i]) * per_100000
+                        carriageVector = (carriageVector / N[i]) * 1e+02
                         
                         plot(
                                 obs.data[,2] ,las = 1,pch = 20, col = "black",xlab = "",type = "p",ylim =
@@ -567,21 +583,25 @@ mleYearSpecFit <-
                                                                            year)
                                         out <-
                                                 subset(out, select = c(time,newI, Carrier))
-                                        out=out[1:length(time.vector),]
+                                        out = out[1:length(time.vector),]
                                         # make the prediction back to count number instead of decimal number by standardizing the incidence
                                         # per 100,000 inhabitant for use by poissoon likelihood comupation.
                                         #out$newI = floor(out$newI*per_100000)
                                         
                                         predict = out$newI
-                                        out = data.frame(time = time.vector, incid = out$newI, Carrier=out$Carrier)  #predict^2
+                                        out = data.frame(
+                                                time = time.vector, incid = out$newI, Carrier = out$Carrier
+                                        )  #predict^2
                                         #print(cbind("model"= log(out$incid), "data" = log(obs.data$incid)))
-                                        print(cbind("model"= round(out$incid,2), 
-                                                    "data" = round(obs.data$incid,2),
-                                                    "carrier"=round(out$Carrier,2)))
+                                        print(cbind(
+                                                "model" = round(out$incid,2),
+                                                "data" = round(obs.data$incid,2),
+                                                "carrier" = round(out$Carrier,2)
+                                        ))
                                         
                                         # function for maximizing the log likelihood
                                         poissonLoglik = sum(dpois(
-                                        x = round(as.numeric(out$incid)),lambda = round(as.numeric(obs.data$incid)),log = F
+                                                x = round(as.numeric(out$incid)),lambda = round(as.numeric(obs.data$incid)),log = F
                                         ))
                                         # take the negative loglikelihood in order to minimize the function toward 0.
                                         negLogLik = (-poissonLoglik)
@@ -694,7 +714,7 @@ mleYearSpecFit <-
                                                 # eg. "L-BFGS-B"
                                                 Fit <- mle2(
                                                         minuslogl = Objective_max_likelihood, start = guess_parms, optimizer = "optim",
-                                                        method = algorithm, lower = lbound, upper = ubound,       
+                                                        method = algorithm, lower = lbound, upper = ubound,
                                                         trace = TRUE, vecpar = TRUE
                                                 )
                                                 
@@ -786,9 +806,11 @@ mleYearSpecFit <-
                                         par(mar = c(5,5,2,4), mfrow = c(2,3)) # plot margings and num of row and col
                                 } #end if.
                                 # prepare data and calibration results to plot
-                                fitted_model = (fitted_model/N[i])*per_100000
-                                obs.data$incid = (obs.data$incid/N[i])*per_100000
-                                carriageVector = (carriageVector/N[i])*1e+02
+                                fitted_model = (fitted_model / N[i]) * per_100000
+                                obs.data$incid = (obs.data$incid / N[i]) *
+                                        per_100000
+                                carriageVector = (carriageVector / N[i]) *
+                                        1e+02
                                 
                                 plot(
                                         obs.data[,2] ,las = 1,pch = 20, col = "black",xlab = "",type = "p",ylim =
@@ -835,8 +857,12 @@ mleYearSpecFit <-
                                 ## IMPORTANT !! CALLING THE addCarriagePlot function
                                 addCarriagePlot() # call the function
                                 
-                                range_a = range(at(coef(Fit)["a0"] * year,coef(Fit)["epsilon_a"],coef(Fit)["teta"]))
-                                range_b = range(at(coef(Fit)["beta0"] * year,coef(Fit)["epsilon_b"],coef(Fit)["teta"])) # multiply beta0*year
+                                range_a = range(at(
+                                        coef(Fit)["a0"] * year,coef(Fit)["epsilon_a"],coef(Fit)["teta"]
+                                ))
+                                range_b = range(at(
+                                        coef(Fit)["beta0"] * year,coef(Fit)["epsilon_b"],coef(Fit)["teta"]
+                                )) # multiply beta0*year
                                 # because the betat function take beta0 argument in per year unit not per day unit.
                                 ## see beta0.harmonic function used inside betat function for details. Same explanation goes
                                 ## for why i used a0*year.
@@ -875,4 +901,3 @@ mleYearSpecFit <-
                 
                 return(fit_out)
         }# mleyearSpecFit fitting maximum likelyhood function ends here.
-
