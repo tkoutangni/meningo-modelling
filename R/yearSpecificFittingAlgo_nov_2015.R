@@ -12,11 +12,9 @@
 # NOTE: The for loop will loop through the index values hold in hc_vector and hc_vector also represent
 # row names of the fit_out matrix.
 
-
 # Function to fit model without age structure using least-square
 # curve fitting approach
-#
-#
+
 negLogLik = function() {
         # function for maximizing the log likelihood
         poissonLoglik = sum(dpois(
@@ -83,30 +81,23 @@ yearSpecFit <- function(district_id, district_year_data, year_now,
                                 
                                 out <-
                                         sim.SCIRS_harmonic(inits,current_parms_combination,nd = nbYearSimulated *
-                                                                   year)
+                                 year)
                                 out <-
                                         subset(out, select = c(time,newI))
                                 predict = tail(out$newI,length(time.vector))
-                                # multiply newI which is case count when N is the actual population size and not
-                                # considered as a proportion = 1
-                                #predict = predict/N[i]
-                                #print(predict)
-                                out = data.frame(time = time.vector, incid = predict)  #predict^2
-                                #print(cbind(round(obs.data), round(out)))
-                                
-                                
-                                print(head(obs.data))
-                                print(head(out))
+                                out = data.frame(time = time.vector, incid = predict)
+                                #predict^2 print(cbind(round(obs.data), round(out)))
+                                #print(head(obs.data))
+                                #print(head(out))
                                 
                                 mc = modCost(
                                         obs = obs.data, model = out, weight = "std"
-                                ) #, weight="mean", weight = "std"
+                                ) # weight="mean", or weight = "std".
                                 cat("\n Model cost:", mc$model, "\n")
                                 
                                 # Get the weighted residuals
                                 Residuals = mc$residuals$res
                                 ll = suppressWarnings(dnorm(Residuals, 0, 1, log = TRUE))
-                                plot(ll, type="l", col="red")
                                 ll = sum(ll)
                                 minusll <- -ll
                                 
@@ -131,8 +122,7 @@ yearSpecFit <- function(district_id, district_year_data, year_now,
                                 #return(negLogLik)
                         } # end objective function.
                 
-                
-                
+
                 if (addCarriageConstrain) {
                         # inequality constraints function as an additional criteria to the Objective function
                         ineqConstrain <-
@@ -204,7 +194,8 @@ yearSpecFit <- function(district_id, district_year_data, year_now,
                 #Optimisation using modFit or nloptr
                 n_iter = n_iter # maximum number of iterations to run
                 nloptrAlgorithm = nloptrAlgorithm # algo to use with the nloptr routine
-                fit_algo <- function(useFME = FALSE,
+                useOptim = TRUE
+                fit_algo <- function(useFME = FALSE, useOptim = useOptim,
                                      guess_parms = guess_parms,
                                      lbound = lower_bound,
                                      ubound = upper_bound) {
@@ -218,6 +209,15 @@ yearSpecFit <- function(district_id, district_year_data, year_now,
                                         lower = lbound,
                                         upper = ubound
                                 )
+                                
+                        }else if(useOptim){
+                                Fit<-optim(par = guess_parms, fn = Objective_least_square,
+                                           method = "L-BFGS-B",
+                                           lower = lbound,
+                                           upper = ubound,
+                                           control = list(
+                                                   maxit = n_iter, trace = 6,factr = 1e-7
+                                           ))
                         }else{
                                 if (addCarriageConstrain) {
                                         ineqConstrain = ineqConstrain
@@ -245,13 +245,20 @@ yearSpecFit <- function(district_id, district_year_data, year_now,
                 ## Run the fit algo for the first time
                 Fit0_par = function() {
                         Fit = fit_algo(
-                                useFME = FALSE,
+                                useFME = FALSE, useOptim = useOptim,
                                 guess_parms = guess_parms,
                                 lbound = lower_bound,
                                 ubound = upper_bound
                         )
                         # get the estimated values of par
-                        Fit$par = Fit$solution
+                        # for optim
+                        if(useOptim){
+                                Fit$par = Fit$par    
+                        }else{
+                           # for nloptr
+                           Fit$par = Fit$solution
+                        }
+                       
                         names(Fit$par) = names(guess_parms)
                         return(Fit$par)
                 } # end function;
@@ -259,7 +266,7 @@ yearSpecFit <- function(district_id, district_year_data, year_now,
                 # Rerun the optimisation algo with Fit$par
                 
                 Fit = fit_algo(
-                        useFME = FALSE,
+                        useFME = FALSE, useOptim = useOptim,
                         guess_parms = Fit0_par(),  #Fit0_par(), # run with the estimated params as initial guess
                         lbound = lower_bound,
                         ubound = upper_bound
@@ -267,7 +274,12 @@ yearSpecFit <- function(district_id, district_year_data, year_now,
                 
                 
                 # get the estimated values of par
-                Fit$par = Fit$solution
+                if(useOptim){
+                        Fit$par = Fit$par
+                }else{
+                        Fit$par = Fit$solution    
+                }
+               
                 names(Fit$par) = names(guess_parms)
                 
                 #Fit$solution
@@ -493,20 +505,34 @@ yearSpecFit <- function(district_id, district_year_data, year_now,
                         addFoldIncrease() # calling the function
                 } # end if plot
                 district_id = district_id
+                if(useOptim){
+                     fit_data = append(c(
+                             district_id,hcIndex,as.numeric(year_now),Fit$value
+                     ), Fit$par, after = 3)   
+                }else{
+          
                 fit_data = append(
                         c(
                                 district_id,hcIndex,as.numeric(year_now),Fit$objective
                         ),Fit$solution,after = 3
                 )
                 
-                fit_out[names(district_year_data)[i],] = fit_data
+                }# end if
                 
+                fit_out[names(district_year_data)[i],] = fit_data
+                if(useOptim){
+                        cat("\n Completed", Fit$counts[1], "iterations out of ", n_iter, " \n")
+                        cat("\n Message :", Fit$message, " Fit status is ", "(",Fit$convergence,")\n")
+                }else{
+
                 cat("\n Completed", Fit$iterations, "iterations out of ", n_iter, " \n")
                 cat("\n Message :", Fit$message, " Fit status is ", "(",Fit$status,")\n")
                 cat(
                         "\n Carriage Prev week_6_8 / Carriage Prev week_44_46: ", fold_change_prev_week_6_8_and_44_46,"\n "
                 )
                 cat("\n ")
+                
+                }# end else
         } # for loop ends here
         
         return(fit_out)
