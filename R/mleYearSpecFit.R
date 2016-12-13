@@ -10,14 +10,16 @@
 ##====================================================
 
 ## defining objective function for parameter optimization.
-Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data) {
+Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, verbose=TRUE) {
   current_parms_combination = vparameters
   names(guess_parms) = parmset
   current_parms_combination[parmset] <- guess_parms
-  cat("\n Current parameters guesses:\n")
-  print(guess_parms)
-  print(parmset)
-  
+  if(verbose) {
+    cat("\n Current parameters guesses:\n")
+    print(guess_parms)
+    print(parmset)
+  }
+
   out <- sim.SCIRS_harmonic(inits,current_parms_combination,nd = nbYearSimulated * year)
   out <- subset(out, select = c(time, newI, Carrier))
   out = out[1:length(time.vector),]
@@ -31,38 +33,48 @@ Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), 
   #print(cbind("model" = round(out$incid,2),"data" = round(obs.data$incid,2),"carrier" = round(out$Carrier,2)))
   
   # function for maximizing the log likelihood
-#   poissonLoglik = sum(dpois(
-#     x = round(as.numeric(out$incid)),lambda = (as.numeric(obs.data$incid)+1e-12),log = T
-#   ))
-  poissonLoglik = sum(dnorm(
-    x = round(as.numeric(out$incid)), mean = (as.numeric(obs.data$incid)+1e-12), 
-    sd=(as.numeric(obs.data$incid)+1e-12), log = T
-  ))
-  # take the negative loglikelihood in order to minimize the function toward 0.
-  negLogLik = (-poissonLoglik)
+  mle=T
+  if(mle){
+    # take the negative loglikelihood in order to minimize the function toward 0.
+    negLogLik = -sum(dpois(
+      x = round((obs.data$incid)),lambda = ((out$incid)+1e-12),log = T
+    ))
+    #   poissonLoglik = sum(dnorm(
+    #     x = round(as.numeric(out$incid)), mean = (as.numeric(obs.data$incid)+1e-12), 
+    #     sd=(as.numeric(obs.data$incid)+1e-12), log = T
+    #   ))
+  }else{
+    mc = modCost(
+      obs = obs.data, model = out, weight = "std"
+    )
+    negLogLik=mc$model
+  }
   
-  cat("\n Negative Log-Likelihood = ",negLogLik, "\n")
+  if(verbose) cat("\n Negative Log-Likelihood = ",negLogLik, "\n")
   return(negLogLik)
 } # end objective function.
 
 
-Objective_least_square <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data) {
+Objective_least_square <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, verbose=FALSE) {
     current_parms_combination = vparameters
     names(guess_parms) = parmset
     current_parms_combination[parmset] <-
       guess_parms
-    cat("\n Current parameters guesses:\n")
-    print(guess_parms)
+    if(verbose){
+      cat("\n Current parameters guesses:\n")
+      print(guess_parms)
+    }
     
     out <- sim.SCIRS_harmonic(inits,current_parms_combination,nd = nbYearSimulated *year)
     out <-subset(out, select = c(time,newI))
-    predict = tail(out$newI,length(time.vector))
-    out = data.frame(time = time.vector, incid = predict)
+    #predict = tail(out$newI,length(time.vector))
+    out = out[1:length(time.vector),]
+    out = data.frame(time = time.vector, incid = out$newI)
     
     mc = modCost(
       obs = obs.data, model = out, weight = "std"
     ) # weight="mean", or weight = "std".
-    cat("\n Model cost:", mc$model, "\n")
+    if(verbose) cat("\n Model cost:", mc$model, "\n")
 
     return(mc$model)
   } # end objective function.
@@ -212,7 +224,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                   "xtol_rel" = 1e-08, "maxeval" = n_iter
                 ),
                 lb = lbound,
-                ub = ubound, nbYearSimulated=nbYearSimulated, obs.data=obs.data
+                ub = ubound, nbYearSimulated=nbYearSimulated, obs.data=obs.data, verbose=TRUE
               )
             
           }
@@ -225,11 +237,14 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
         new_guess_parms = coef(firstFit)
       }else{
         new_guess_parms = firstFit$solution
+        names(new_guess_parms)=names(guess_parms)
       }
-            
+      cat("\n Negative Log-Likelihood = ",firstFit$objective, "\n")
+      cat(new_guess_parms)
       # Rerun the optimisation algo with fit_par
       # run with the estimated params as initial guess
       Fit = fit_algo(useMLE = useMLE, guess_parms = new_guess_parms, lbound = lower_bound, ubound = upper_bound)
+      
       #Fit=firstFit
       # get the estimated values of par
       if(useMLE){
@@ -238,6 +253,10 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
         fit_par = Fit$solution
         names(fit_par)=names(guess_parms)
       }
+      
+      cat("\n Negative Log-Likelihood = ",Fit$objective, "\n")
+      cat(fit_par)
+      
       # Setting graphical parameters.
       ##
       if(show_plot){
