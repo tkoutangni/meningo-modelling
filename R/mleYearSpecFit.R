@@ -33,8 +33,7 @@ Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), 
   #print(cbind("model" = round(out$incid,2),"data" = round(obs.data$incid,2),"carrier" = round(out$Carrier,2)))
   
   # function for maximizing the log likelihood
-  mle=T
-  if(mle){
+
     # take the negative loglikelihood in order to minimize the function toward 0.
     negLogLik = -sum(dpois(
       x = round((obs.data$incid)),lambda = ((out$incid)+1e-12),log = T
@@ -43,12 +42,7 @@ Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), 
     #     x = round(as.numeric(out$incid)), mean = (as.numeric(obs.data$incid)+1e-12), 
     #     sd=(as.numeric(obs.data$incid)+1e-12), log = T
     #   ))
-  }else{
-    mc = modCost(
-      obs = obs.data, model = out, weight = "std"
-    )
-    negLogLik=mc$model
-  }
+  
   
   if(verbose) cat("\n Negative Log-Likelihood = ",negLogLik, "\n")
   return(negLogLik)
