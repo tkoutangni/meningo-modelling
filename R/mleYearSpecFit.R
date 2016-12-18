@@ -10,7 +10,7 @@
 ##====================================================
 
 ## defining objective function for parameter optimization.
-Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, verbose=TRUE) {
+Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, time.vector, verbose=TRUE) {
   current_parms_combination = vparameters
   names(guess_parms) = parmset
   current_parms_combination[parmset] <- guess_parms
@@ -32,12 +32,17 @@ Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), 
   #print(cbind("model"= log(out$incid), "data" = log(obs.data$incid)))
   #print(cbind("model" = round(out$incid,2),"data" = round(obs.data$incid,2),"carrier" = round(out$Carrier,2)))
   
-  # function for maximizing the log likelihood
+  # function for maximizi?ng the log likelihood
 
     # take the negative loglikelihood in order to minimize the function toward 0.
     negLogLik = -sum(dpois(
       x = round((obs.data$incid)),lambda = ((out$incid)+1e-12),log = T
     ))
+    
+    if(is.nan(negLogLik)){
+            negLogLik = 1e+05
+    }
+    #ifelse(is.nan(negLogLik), 1e+05, negLogLik)
     #   poissonLoglik = sum(dnorm(
     #     x = round(as.numeric(out$incid)), mean = (as.numeric(obs.data$incid)+1e-12), 
     #     sd=(as.numeric(obs.data$incid)+1e-12), log = T
@@ -49,11 +54,10 @@ Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), 
 } # end objective function.
 
 
-Objective_least_square <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, verbose=FALSE) {
+Objective_least_square <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, time.vector, verbose=FALSE) {
     current_parms_combination = vparameters
     names(guess_parms) = parmset
-    current_parms_combination[parmset] <-
-      guess_parms
+    current_parms_combination[parmset] <-guess_parms
     if(verbose){
       cat("\n Current parameters guesses:\n")
       print(guess_parms)
@@ -74,7 +78,7 @@ Objective_least_square <- function(guess_parms, parmset = names(guess_parms), nb
   } # end objective function.
 
 # inequality constraints function as an additional criteria to the Objective function
-ineqConstrainFunction <- function(guess_parms, parmset = names(guess_parms)) {
+ineqConstrainFunction <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated, obs.data, time.vector, verbose=FALSE) {
   #expectedMaxCarriagePrev = 10*1e-02 # 6 percent according to kristiansen et al paper
   current_parms_combination = vparameters
   names(guess_parms) = parmset
@@ -165,11 +169,14 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
     }else{
       ineqConstrain = NULL
     }# end if addCarriageConstrain
+    
     # Preparing data for optimisation
     ready_data = district_year_data #=======
     year_now = as.character(year_now) # indicating year of data record as a character
     time.vector = coredata(ready_data$julian_day) # the time vector at with to compare model to data
-
+    print(ready_data)
+    print(ready_data$julian_day)
+    
         
     for (i in hc_vector) {
       # for loop start here
@@ -187,11 +194,11 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
       
       # ! important for the mle2() function to know the names of the parameters
       # being optimized when the first argument is a vector of all parameters
-      parnames(Objective_max_likelihood) <- c(names(guess_parms),"nbYearSimulated")
+        parnames(Objective_max_likelihood) <- c(names(guess_parms),"nbYearSimulated")
       
       ## OPTIMISATION ALGORITHM
-      objfunc=Objective_max_likelihood
-      if(useLSQ) objfunc=Objective_least_square
+      objfunc = Objective_max_likelihood
+      if(useLSQ) objfunc = Objective_least_square
       
       fit_algo <- function(useMLE = useMLE, 
                            guess_parms = guess_parms,
@@ -199,14 +206,17 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                            ubound = upper_bound) {
           if (useMLE) {
             # See ?minuslogl for algo options. Most algo defined in the optim package work.
-            # eg. "L-BFGS-B"
+            # eg. "L-BFGS-B
+            #fixed_parms = vparameters[c("gamma", "mu", "rho", "act_comp_mening_death")]
+#             print(names(as.list(guess_parms)))
+#             Fit<-mle( minuslogl = objfunc, start = as.list(guess_parms), fixed = as.list(fixed_parms),
+#                       method = algorithm, lower = lbound, upper = ubound,
+#                       trace = TRUE, data = list(nbYearSimulated=nbYearSimulated, obs.data= obs.data, time.vector = time.vector, verbose=FALSE))
             Fit <- mle2(
               minuslogl = objfunc, start = guess_parms, optimizer = "optim",
               method = algorithm, lower = lbound, upper = ubound,
-              trace = TRUE, vecpar = TRUE, data=list(nbYearSimulated=nbYearSimulated, obs.data=obs.data)
-            )
+              trace = TRUE, vecpar = TRUE, data = list(nbYearSimulated=nbYearSimulated, obs.data= obs.data, time.vector = time.vector, verbose=TRUE))
           }else{
-
             # by default fit with leastsquares and the nloptr algo
             Fit <- nloptr(
                 eval_f = objfunc, # the objective function
@@ -218,7 +228,11 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                   "xtol_rel" = 1e-08, "maxeval" = n_iter
                 ),
                 lb = lbound,
-                ub = ubound, nbYearSimulated=nbYearSimulated, obs.data=obs.data, verbose=TRUE
+                ub = ubound, 
+                nbYearSimulated=nbYearSimulated, 
+                obs.data=obs.data,
+                time.vector = time.vector,
+                verbose=TRUE
               )
             
           }
@@ -226,15 +240,16 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
         } # end fit_algo function
       
       ## Run the fit algo for the first time
-      firstFit=fit_algo(useMLE = useMLE, guess_parms = guess_parms, lbound = lower_bound, ubound = upper_bound)
+      #time.vector = time.vector
+      firstFit = fit_algo(useMLE = useMLE, guess_parms = guess_parms, lbound = lower_bound, ubound = upper_bound)
       if(useMLE){
         new_guess_parms = coef(firstFit)
       }else{
         new_guess_parms = firstFit$solution
         names(new_guess_parms)=names(guess_parms)
       }
-      cat("\n Negative Log-Likelihood = ",firstFit$objective, "\n")
-      cat(new_guess_parms)
+      #cat("\n Negative Log-Likelihood = ",firstFit$objective, "\n")
+      #cat(new_guess_parms)
       # Rerun the optimisation algo with fit_par
       # run with the estimated params as initial guess
       Fit = fit_algo(useMLE = useMLE, guess_parms = new_guess_parms, lbound = lower_bound, ubound = upper_bound)
@@ -247,10 +262,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
         fit_par = Fit$solution
         names(fit_par)=names(guess_parms)
       }
-      
-      cat("\n Negative Log-Likelihood = ",Fit$objective, "\n")
-      cat(fit_par)
-      
+    
       # Setting graphical parameters.
       ##
       if(show_plot){
@@ -281,7 +293,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
         if (which(hc_vector == i) == 1) {
           par(mar = c(5,5,2,4), mfrow = c(2,3)) # plot margings and num of row and col
         } #end if.
-        # prepare data and calibration results to plot
+        # prepare data and calibration results for plot
         fitted_model = (fitted_model / N[i]) * per_100000
         obs.data$incid = (obs.data$incid / N[i]) *
           per_100000
@@ -366,8 +378,14 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
       fit_out[names(district_year_data)[i],] = fit_data
       
       cat("\n Carriage Prev week_6_8 / Carriage Prev week_44_46: ", fold_change_prev_week_6_8_and_44_46,"\n\n ")
+      if(useMLE){
+             print (summary(Fit))
+              cat("\n AIC = ", AIC(Fit))
+      }
       
     } # for loop ends here
     
     return(fit_out)
   }# mleyearSpecFit fitting maximum likelyhood function ends here.
+
+

@@ -17,6 +17,7 @@ source("R/data_simple_mooving_week_average.R")
 
 ##### =============== Models fitting algo ===========
 source("R/yearSpecificFittingAlgo_nov_2015.R",verbose = FALSE)
+source("R/mleYearSpecFit.R")
 
 ##### Get age distribution of the burkina faso population according
 ##### to years.
