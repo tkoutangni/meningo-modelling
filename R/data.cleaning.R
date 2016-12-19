@@ -19,9 +19,9 @@ if(doPlot) incid_plot( # plot all health centre in seguenegua
 
 ####  SEGUENEGA District 
 # print the result of the  find.outbreak function to check if it actually worked
-verbose = TRUE # important to set the value to either TRUE or FALSE to show or hide
+#verbose = FALSE # important to set the value to either TRUE or FALSE to show or hide
 # find.outbreak function result on the console.
-find.outbreak(incid.menin[,district.index$seguenega],verbose=verbose)
+find.outbreak(incid.menin[,district.index$seguenega],verbose=FALSE)
 
 # formation sanitaire avec foyer épidemique.
 fe_fs_seguenega<-c( # formation sanitaire avec foyer épidemique.
@@ -49,7 +49,7 @@ if(doPlot) incid_plot(incid.menin[,district.index$seguenega][,group_fs_seguenega
 
 ####  HOUNDE District 
 
-find.outbreak(incid.menin[,district.index$hounde],verbose=verbose)
+find.outbreak(incid.menin[,district.index$hounde],verbose=FALSE)
 
 # formation sanitaire avec foyer épidemique.
 fe_fs_hounde<-c( # formation sanitaire avec foyer épidemique.
@@ -72,7 +72,7 @@ if(doPlot) incid_plot(incid.menin[,district.index$hounde][,group_fs_hounde$fe_fs
 
 ## BOULSA district
 
-find.outbreak(incid.menin[,district.index$boulsa],verbose=verbose)
+find.outbreak(incid.menin[,district.index$boulsa],verbose=FALSE)
 # formation sanitaire avec foyer épidemique.
 
 fe_fs_boulsa<-c( # formation sanitaire avec foyer épidemique.
@@ -89,7 +89,7 @@ if(doPlot) incid_plot(incid.menin[,district.index$boulsa][,group_fs_boulsa$fe_fs
 
 # DAFRA District
 
-find.outbreak(incid.menin[,district.index$dafra],verbose=verbose)
+find.outbreak(incid.menin[,district.index$dafra],verbose=FALSE)
 # formation sanitaire avec foyer épidemique.
 
 fe_fs_dafra<-c( # formation sanitaire avec foyer épidemique.
@@ -107,7 +107,7 @@ if(doPlot) incid_plot(incid.menin[,district.index$dafra][,group_fs_dafra$fe_fs_i
 # DANDE District.
 
 
-find.outbreak(incid.menin[,district.index$dande],verbose=verbose)
+find.outbreak(incid.menin[,district.index$dande],verbose=FALSE)
 # formation sanitaire avec foyer épidemique.
 
 fe_fs_dande<-c( # formation sanitaire avec foyer épidemique.
@@ -127,7 +127,7 @@ if(doPlot) incid_plot(incid.menin[,district.index$dande][,group_fs_dande$fe_fs_i
 # DÔ District.
 
 
-find.outbreak(incid.menin[,district.index$do],verbose=verbose)
+find.outbreak(incid.menin[,district.index$do],verbose=FALSE)
 
 # formation sanitaire avec foyer épidemique.
 
@@ -142,7 +142,7 @@ if(doPlot) incid_plot(incid.menin[,district.index$do][,group_fs_do$non_fe_fs.ind
 # GOURCY District.
 
 
-find.outbreak(incid.menin[,district.index$gourcy],verbose=verbose)
+find.outbreak(incid.menin[,district.index$gourcy],verbose=FALSE)
 # formation sanitaire avec foyer épidemique.
 
 fe_fs_gourcy<-c( # formation sanitaire avec foyer épidemique.
@@ -161,7 +161,7 @@ if(doPlot) incid_plot(incid.menin[,district.index$gourcy][,group_fs_gourcy$fe_fs
 
 # K.VIGUE DISTRICT
 
-find.outbreak(incid.menin[,district.index$k.vigue],verbose=verbose)
+find.outbreak(incid.menin[,district.index$k.vigue],verbose=FALSE)
 
 fe_fs_k.vigue<-c( # formation sanitaire avec foyer épidemique.
     "KARANGASSO VIGUE|csps k. vigue",
@@ -177,7 +177,7 @@ if(doPlot) incid_plot(incid.menin[,district.index$k.vigue][,group_fs_k.vigue$fe_
 
 # LENA DISTRICT.
 
-find.outbreak(incid.menin[,district.index$lena],verbose=verbose)
+find.outbreak(incid.menin[,district.index$lena],verbose=FALSE)
 
 fe_fs_lena<-c( # formation sanitaire avec foyer épidemique.
     "LENA|csps bah",
@@ -196,7 +196,7 @@ if(doPlot) incid_plot(incid.menin[,district.index$lena][,group_fs_lena$fe_fs_ind
 
 
 # ORODORA District.
-find.outbreak(incid.menin[,district.index$orodora],verbose=verbose)
+find.outbreak(incid.menin[,district.index$orodora],verbose=FALSE)
 
 fe_fs_orodora<-c( # formation sanitaire avec foyer épidemique.
     "ORODARA|csps badara",
@@ -216,7 +216,7 @@ if(doPlot) incid_plot(incid.menin[,district.index$orodora][,group_fs_orodora$fe_
 
 # OUAHIGOUYA District 
 
-find.outbreak(incid.menin[,district.index$ouahigouya],verbose=verbose)
+find.outbreak(incid.menin[,district.index$ouahigouya],verbose=FALSE)
 
 # formation sanitaire avec foyer épidemique.
 
@@ -229,7 +229,7 @@ if(doPlot) incid_plot(incid.menin[,district.index$ouahigouya][,group_fs_ouahigou
 
 
 # YAKO District 
-find.outbreak(incid.menin[,district.index$yako],verbose=verbose)
+find.outbreak(incid.menin[,district.index$yako],verbose=FALSE)
 
 fe_fs_yako<-c( # formation sanitaire avec foyer épidemique.
     "YAKO|csps bouria",

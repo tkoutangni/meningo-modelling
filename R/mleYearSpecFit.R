@@ -10,14 +10,14 @@
 ##====================================================
 
 ## defining objective function for parameter optimization.
-Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, time.vector, verbose=TRUE) {
+Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, time.vector, verbose=FALSE) {
   current_parms_combination = vparameters
   names(guess_parms) = parmset
   current_parms_combination[parmset] <- guess_parms
   if(verbose) {
     cat("\n Current parameters guesses:\n")
     print(guess_parms)
-    print(parmset)
+    #print(parmset)
   }
 
   out <- sim.SCIRS_harmonic(inits,current_parms_combination,nd = nbYearSimulated * year)
@@ -35,6 +35,7 @@ Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), 
   # function for maximizi?ng the log likelihood
 
     # take the negative loglikelihood in order to minimize the function toward 0.
+  
     negLogLik = -sum(dpois(
       x = round((obs.data$incid)),lambda = ((out$incid)+1e-12),log = T
     ))
@@ -42,7 +43,7 @@ Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), 
     if(is.nan(negLogLik)){
             negLogLik = 1e+05
     }
-    #ifelse(is.nan(negLogLik), 1e+05, negLogLik)
+    
     #   poissonLoglik = sum(dnorm(
     #     x = round(as.numeric(out$incid)), mean = (as.numeric(obs.data$incid)+1e-12), 
     #     sd=(as.numeric(obs.data$incid)+1e-12), log = T
@@ -60,7 +61,7 @@ Objective_least_square <- function(guess_parms, parmset = names(guess_parms), nb
     current_parms_combination[parmset] <-guess_parms
     if(verbose){
       cat("\n Current parameters guesses:\n")
-      print(guess_parms)
+      #print(guess_parms)
     }
     
     out <- sim.SCIRS_harmonic(inits,current_parms_combination,nd = nbYearSimulated *year)
@@ -73,7 +74,7 @@ Objective_least_square <- function(guess_parms, parmset = names(guess_parms), nb
       obs = obs.data, model = out, weight = "std"
     ) # weight="mean", or weight = "std".
     if(verbose) cat("\n Model cost:", mc$model, "\n")
-
+    
     return(mc$model)
   } # end objective function.
 
@@ -130,7 +131,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
            beta0ForcingOnly,# must be a boolean
            addCarriageConstrain, # must be a boolean
            algorithm = "L-BFGS-B", # must be of string character type
-           show_plot = FALSE,
+           show_plot = FALSE, verbose = FALSE,
            n_iter = NULL, useMLE = FALSE, useLSQ=F) {
     # number of max iter # default to 1000
    
@@ -171,15 +172,17 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
     }# end if addCarriageConstrain
     
     # Preparing data for optimisation
-    ready_data = district_year_data #=======
+    ready_data = district_year_data
     year_now = as.character(year_now) # indicating year of data record as a character
     time.vector = coredata(ready_data$julian_day) # the time vector at with to compare model to data
-    print(ready_data)
-    print(ready_data$julian_day)
-    
+    #print(head(ready_data))
+    cat("\n Will fit the model to the following health centers: \n ", names(district_year_data)[c(hc_vector)] )
+   
         
     for (i in hc_vector) {
+      #if(i==1) cat("\n Will fit the model to the following health centers: ", names(district_year_data)[c(hc_vector)] )
       # for loop start here
+      cat("\n =====================\n ")
       cat("\n Fitting model to ",names(district_year_data)[i],"data. Please wait...\n")
       hcIndex = i # health center column index in the database
       
@@ -189,8 +192,6 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
       obs.data$incid <- obs.data$incid * N[i]# multiply back with current hc population size to have case count
       #instead of incidence of cases (i.e. cases_count/N) ?
       
-      # make the prediction back to count number instead of decimal number by standardizing the incidence
-      # per 100,000 inhabitant for use by poissoon likelihood computation.
       
       # ! important for the mle2() function to know the names of the parameters
       # being optimized when the first argument is a vector of all parameters
@@ -215,7 +216,8 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
             Fit <- mle2(
               minuslogl = objfunc, start = guess_parms, optimizer = "optim",
               method = algorithm, lower = lbound, upper = ubound,
-              trace = TRUE, vecpar = TRUE, data = list(nbYearSimulated=nbYearSimulated, obs.data= obs.data, time.vector = time.vector, verbose=TRUE))
+              trace = TRUE, vecpar = TRUE, data = list(nbYearSimulated=nbYearSimulated, 
+                                                       obs.data= obs.data, time.vector = time.vector, verbose=FALSE))
           }else{
             # by default fit with leastsquares and the nloptr algo
             Fit <- nloptr(
@@ -232,7 +234,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                 nbYearSimulated=nbYearSimulated, 
                 obs.data=obs.data,
                 time.vector = time.vector,
-                verbose=TRUE
+                verbose=FALSE
               )
             
           }
@@ -300,13 +302,13 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
         carriageVector = (carriageVector / N[i]) *
           1e+02
         
-        plot(obs.data[,2] ,las = 1,pch = 20, col = "black",xlab = "",type = "p",ylim =
+        plot(obs.data[,2] ,las = 1,pch = 19, col = "black",xlab = "",type = "p",ylim =
             c(0,(
               1.1 * max(obs.data[,2] ,na.rm = TRUE)
             )),ylab = ""
         ) #ylim=c(0,(1.1*max(obs.data[-c(na.data.index),2]*1e+05)))
         lines(
-          fitted_model ,col = "red",type = "l",pch = 20,lwd = 2
+          fitted_model ,col = "red",type = "l",lwd = 2
         )
         #lines(carriageVector*100,col="blue",type="l",lwd=2)
         # adding main title and ylab for the first variable ploted
@@ -332,22 +334,26 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
             "Carriers(%)", side = 4, line = 2,cex = 0.7, col = "azure4"
           )
           
-          legend(
-            "topright",
-            legend = c("Data","NewI","C"),
-            lty = c(0,1,2), pch = c(20, NA, NA),
-            lwd = c(NA,2,2),
-            col = c("black","red","azure4"),
-            bty = "n",bg = "transparent",horiz = FALSE, merge = TRUE
-          ) #horiz = TRUE for horizontal legend
         } # end addCarriagePlot function
         ## IMPORTANT !! CALLING THE addCarriagePlot function
         addCarriagePlot() # call the function
         
+        # add legend
+        
+        legend(
+          "topright", inset = 0.1, seg.len = 5, x.intersp= 2,  y.intersp= 1.5,
+          legend = c("Data","Model","C"),
+          lty = c(0,1,2), pch = c(19, NA, NA),
+          lwd = c(NA,2,2),
+          col = c("black","red","azure4"),
+          bty = "n",bg = "transparent",horiz = F, merge = TRUE
+        ) #horiz = TRUE for horizontal legend
+        
+        
         range_a = range(at(
           fit_par["a0"] * year,fit_par["epsilon_a"],fit_par["teta"]
         ))
-        range_b = range(at(
+        range_b = range(betat(
           fit_par["beta0"] * year,fit_par["epsilon_b"],fit_par["teta"]
         )) # multiply beta0*year
         # because the betat function take beta0 argument in per year unit not per day unit.
@@ -377,10 +383,28 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
       
       fit_out[names(district_year_data)[i],] = fit_data
       
-      cat("\n Carriage Prev week_6_8 / Carriage Prev week_44_46: ", fold_change_prev_week_6_8_and_44_46,"\n\n ")
+      #cat("\n Carriage Prev week_6_8 / Carriage Prev week_44_46: ", fold_change_prev_week_6_8_and_44_46,"\n\n ")
+      
       if(useMLE){
              print (summary(Fit))
               cat("\n AIC = ", AIC(Fit))
+      }else{
+        
+        cat("\n Model fitted using the nloptr package for parameters optimisations \n:")
+        print(Fit$call)
+        cat("\n Completed", Fit$iterations, "iterations out of ", n_iter, " \n")
+        cat("\n Message :", Fit$message, " Fit status is ", "(",Fit$status,")\n")
+        cat("\n ====================== \n ")
+        cat("\n Details of the fit: \n")
+        cat("\n Loglikelihood : ", -(Fit$objective), "\n")
+        minusloglik = Fit$objective
+        k = length(Fit$solution) # number of estimated parameters
+        nobs = length(obs.data$incid) # number of observations in the data set
+        AIC = (2*minusloglik) + (2*k) # Akaike's Information Criterion
+        AIC_corrected = AIC + (2*k*(k+1)/(nobs-k-1)) # corrected Akaike's Information Criterion.
+        BIC = (2*minusloglik) + k*log(nobs) # Bayesian Information Criterion
+        
+        cat("\n AICc = ", AIC_corrected, "and BIC = ", BIC )
       }
       
     } # for loop ends here

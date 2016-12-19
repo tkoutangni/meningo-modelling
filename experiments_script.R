@@ -93,14 +93,16 @@ Forc_a0_2006_bema_max_likelihood_estimate = mleYearSpecFit(district_id=1,
 
 
 
-toto_mle2_1 = mleYearSpecFit(district_id=1,
+toto_mle = mleYearSpecFit(district_id=1,
                              district_year_data = seguen_2006, 
                              year_now = 2006, hc_vector= c(1),
                              a0ForcingOnly=FALSE, beta0ForcingOnly = FALSE, 
-                             addCarriageConstrain = FALSE, show_plot = TRUE,
-                             # choose one of the optim algorithm
-                             algorithm = "L-BFGS-B",  useMLE=TRUE, useLSQ = F,
-                             n_iter = 1000)
+                             addCarriageConstrain = TRUE, show_plot = TRUE, verbose = FALSE,
+                             # choose the appropriate method for algorithm
+                             # use NLOPT_LN_BOBYQA or NLOPT_LN_COBYLA for LSQ fit with nloptr
+                             # use L-BFGS-B for the bbmle package with mle2
+                             algorithm = "NLOPT_LN_COBYLA",  useMLE=F, useLSQ = F,
+                             n_iter = 10000)
 
 # Problem 3: Once I'm able to fit the model with no age structure using 
 # maximum likelihood estimation, the next problem to solve is to calibrate the model including
