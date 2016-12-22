@@ -93,9 +93,10 @@ Forc_a0_2006_bema_max_likelihood_estimate = mleYearSpecFit(district_id=1,
 
 
 
+N = unlist(seguen_2006_population_size)
 toto_mle = mleYearSpecFit(district_id=1,
-                             district_year_data = seguen_2006, 
-                             year_now = 2006, hc_vector= c(1),
+                             district_year_data = seguen_2006, population_size = seguen_2006_population_size,
+                             year_now = 2006, hc_vector= c(1:4,6),
                              a0ForcingOnly=FALSE, beta0ForcingOnly = FALSE, 
                              addCarriageConstrain = TRUE, show_plot = TRUE, verbose = FALSE,
                              # choose the appropriate method for algorithm

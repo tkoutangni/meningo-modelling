@@ -10,14 +10,13 @@
 ##====================================================
 
 ## defining objective function for parameter optimization.
-Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, time.vector, verbose=FALSE) {
+Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, time.vector, verbose=verbose) {
   current_parms_combination = vparameters
   names(guess_parms) = parmset
   current_parms_combination[parmset] <- guess_parms
   if(verbose) {
     cat("\n Current parameters guesses:\n")
     print(guess_parms)
-    #print(parmset)
   }
 
   out <- sim.SCIRS_harmonic(inits,current_parms_combination,nd = nbYearSimulated * year)
@@ -55,13 +54,13 @@ Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), 
 } # end objective function.
 
 
-Objective_least_square <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, time.vector, verbose=FALSE) {
+Objective_least_square <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, time.vector, verbose=verbose) {
     current_parms_combination = vparameters
     names(guess_parms) = parmset
     current_parms_combination[parmset] <-guess_parms
     if(verbose){
       cat("\n Current parameters guesses:\n")
-      #print(guess_parms)
+      print(guess_parms)
     }
     
     out <- sim.SCIRS_harmonic(inits,current_parms_combination,nd = nbYearSimulated *year)
@@ -79,7 +78,7 @@ Objective_least_square <- function(guess_parms, parmset = names(guess_parms), nb
   } # end objective function.
 
 # inequality constraints function as an additional criteria to the Objective function
-ineqConstrainFunction <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated, obs.data, time.vector, verbose=FALSE) {
+ineqConstrainFunction <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated, obs.data, time.vector, verbose=verbose) {
   #expectedMaxCarriagePrev = 10*1e-02 # 6 percent according to kristiansen et al paper
   current_parms_combination = vparameters
   names(guess_parms) = parmset
@@ -126,7 +125,7 @@ ineqConstrainFunction <- function(guess_parms, parmset = names(guess_parms), nbY
 # algorithm = "L-BFGS-B" 
 # n_iter = NULL
 mleYearSpecFit <-function(district_id, district_year_data, year_now,
-           hc_vector,
+           hc_vector, population_size,
            a0ForcingOnly,# must be a boolean
            beta0ForcingOnly,# must be a boolean
            addCarriageConstrain, # must be a boolean
@@ -145,6 +144,10 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
         )
       )
     ))
+    # add goodness of fit estimates when maximum likelihood approach is used instead of
+    # the least square fitting approach
+    if(!useLSQ){fit_out$AIC<-NA; fit_out$AICc<-NA; fit_out$BIC<-NA}
+    
     guess_parms = initial_guess_parms # intial_guess_parms vector is in the parameters file.
     #Constrain bounds for parameters
     lower_bound = guess_lower_bound # guess_lower_bound vector is in the parameters R files
@@ -175,21 +178,23 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
     ready_data = district_year_data
     year_now = as.character(year_now) # indicating year of data record as a character
     time.vector = coredata(ready_data$julian_day) # the time vector at with to compare model to data
-    #print(head(ready_data))
+    population_size<-unlist(population_size)
+    print(cbind(population_size))
+
     cat("\n Will fit the model to the following health centers: \n ", names(district_year_data)[c(hc_vector)] )
    
         
     for (i in hc_vector) {
-      #if(i==1) cat("\n Will fit the model to the following health centers: ", names(district_year_data)[c(hc_vector)] )
-      # for loop start here
+      
       cat("\n =====================\n ")
       cat("\n Fitting model to ",names(district_year_data)[i],"data. Please wait...\n")
       hcIndex = i # health center column index in the database
-      
+      N = population_size[hcIndex]
+      cat("\n population size for ", names(district_year_data)[i], ": ", round(N), "\n")
       #Format the right data
       obs.data = subset(ready_data,select = c(hcIndex,julian_day)) # make sure to change first indice to match the desired health center
-      obs.data = data.frame(time = coredata(obs.data[,2]), incid = coredata(obs.data[,1]))
-      obs.data$incid <- obs.data$incid * N[i]# multiply back with current hc population size to have case count
+      obs.data = data.frame(time = coredata(obs.data[,2]), incid = coredata(obs.data[,1])*N)
+      #obs.data$incid <- obs.data$incid * N# multiply back with current hc population size to have case count
       #instead of incidence of cases (i.e. cases_count/N) ?
       
       
@@ -216,8 +221,8 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
             Fit <- mle2(
               minuslogl = objfunc, start = guess_parms, optimizer = "optim",
               method = algorithm, lower = lbound, upper = ubound,
-              trace = TRUE, vecpar = TRUE, data = list(nbYearSimulated=nbYearSimulated, 
-                                                       obs.data= obs.data, time.vector = time.vector, verbose=FALSE))
+              trace = TRUE, vecpar = TRUE, data = list(nbYearSimulated = nbYearSimulated, 
+                                                       obs.data= obs.data, time.vector = time.vector, verbose=verbose))
           }else{
             # by default fit with leastsquares and the nloptr algo
             Fit <- nloptr(
@@ -234,7 +239,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                 nbYearSimulated=nbYearSimulated, 
                 obs.data=obs.data,
                 time.vector = time.vector,
-                verbose=FALSE
+                verbose=verbose
               )
             
           }
@@ -296,10 +301,10 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
           par(mar = c(5,5,2,4), mfrow = c(2,3)) # plot margings and num of row and col
         } #end if.
         # prepare data and calibration results for plot
-        fitted_model = (fitted_model / N[i]) * per_100000
-        obs.data$incid = (obs.data$incid / N[i]) *
+        fitted_model = (fitted_model / N) * per_100000
+        obs.data$incid = (obs.data$incid / N) *
           per_100000
-        carriageVector = (carriageVector / N[i]) *
+        carriageVector = (carriageVector / N) *
           1e+02
         
         plot(obs.data[,2] ,las = 1,pch = 19, col = "black",xlab = "",type = "p",ylim =
@@ -377,13 +382,13 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
       } # end if plot
       
       district_id = district_id
+      
       fit_data = append(c(
         district_id,hcIndex,as.numeric(year_now),ifelse(useMLE,as.numeric(logLik(Fit)),Fit$objective)
       ),fit_par,after = 3)
       
-      fit_out[names(district_year_data)[i],] = fit_data
       
-      #cat("\n Carriage Prev week_6_8 / Carriage Prev week_44_46: ", fold_change_prev_week_6_8_and_44_46,"\n\n ")
+      cat("\n Carriage Prev week_6_8 / Carriage Prev week_44_46: ", fold_change_prev_week_6_8_and_44_46,"\n\n ")
       
       if(useMLE){
              print (summary(Fit))
@@ -395,18 +400,24 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
         cat("\n Completed", Fit$iterations, "iterations out of ", n_iter, " \n")
         cat("\n Message :", Fit$message, " Fit status is ", "(",Fit$status,")\n")
         cat("\n ====================== \n ")
-        cat("\n Details of the fit: \n")
-        cat("\n Loglikelihood : ", -(Fit$objective), "\n")
-        minusloglik = Fit$objective
-        k = length(Fit$solution) # number of estimated parameters
-        nobs = length(obs.data$incid) # number of observations in the data set
-        AIC = (2*minusloglik) + (2*k) # Akaike's Information Criterion
-        AIC_corrected = AIC + (2*k*(k+1)/(nobs-k-1)) # corrected Akaike's Information Criterion.
-        BIC = (2*minusloglik) + k*log(nobs) # Bayesian Information Criterion
         
-        cat("\n AICc = ", AIC_corrected, "and BIC = ", BIC )
-      }
+            if(!useLSQ){
+              cat("\n Details of the fit: \n")
+              cat("\n Loglikelihood : ", -(Fit$objective), "\n")
+              minusloglik = Fit$objective
+              k = length(Fit$solution) # number of estimated parameters
+              nobs = length(obs.data$incid) # number of observations in the data set
+              AIC = (2*minusloglik) + (2*k) # Akaike's Information Criterion
+              AIC_corrected = AIC + (2*k*(k+1)/(nobs-k-1)) # corrected Akaike's Information Criterion.
+              BIC = (2*minusloglik) + k*log(nobs) # Bayesian Information Criterion
+              cat("\n AICc = ", AIC_corrected, "and BIC = ", BIC )
+              fit_data<-c(fit_data,AIC, AIC_corrected, BIC)
+              #fit_out$AIC<- AIC ; fit_out$AICc<-AIC_corrected ; fit_out$BIC<-BIC
+              
+            } # end not useSQL if block
+      } #end else block
       
+      fit_out[names(district_year_data)[i],] = fit_data
     } # for loop ends here
     
     return(fit_out)

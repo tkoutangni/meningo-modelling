@@ -476,21 +476,72 @@ get_population_size<-function(data = all_health_center_year_population, district
 
 
 
-seguen_2006_population_size = list(
-        "csps bema" = get_population_size(district.name = "SEGUENEGA", health_center_name = "csps bema", year = "2006"),
-        "csps berenga" = get_population_size(district.name = "SEGUENEGA", health_center_name = "csps berenga", year = "2006"), 
-        "csps bouga" = get_population_size(district.name = "SEGUENEGA", health_center_name = "csps bouga", year = "2006"), 
-        "csps gambo" = get_population_size(district.name = "SEGUENEGA", health_center_name = "csps gambo", year = "2006"),
-        "csps goubré" = get_population_size(district.name = "SEGUENEGA", health_center_name = "csps goubré", year = "2006"),
-        "csps kossouka" = get_population_size(district.name = "SEGUENEGA", health_center_name = "csps kossouka", year = "2006"),
-        "csps rondo" = get_population_size(district.name = "SEGUENEGA", health_center_name = "csps rondo", year = "2006"),
-        "csps teonsgo" = NA
-)
 
 
-non_epi_health_center_year_population_size<-list(
-        seguen_2006_population_size = seguen_2006_population_size
-)
+# function to get names of health centers from colums names of the zoo time series
+populations_in_this_district <- function(zoo_serie, this_year) {
+  names = unique(unlist(strsplit(names(zoo_serie) , "[|]"))) # take colnames and split them into district.name and health_center_name
+  names = names[1:(length(names) - 1)] # remove the julian_day column from the vector
+  district_name = names[1]
+  print(district_name)
+  new_list = list()
+  for (i in names) {
+    if (i != district_name) {
+      print(i)
+      hc_name <- i
+      hc_name = get_population_size(
+        district.name = district_name,
+        health_center_name = hc_name,
+        year = this_year
+      )
+      new_list[i] = hc_name
+    }
+  }
+  return(new_list)
+}
+
+# remove the column with all missing data from seguen_2006
+seguen_2006 <- subset(seguen_2006, select = -c(`SEGUENEGA|csps teonsgo`) )
+# get health center populations sizes for Seguenega from 2006 to 2010 (usable data)
+seguen_2006_population_size = populations_in_this_district(seguen_2006, "2006")
+seguen_2007_population_size = populations_in_this_district(seguen_2007, "2007")
+seguen_2008_population_size = populations_in_this_district(seguen_2008, "2008")
+seguen_2009_population_size = populations_in_this_district(seguen_2009, "2009")
+seguen_2010_population_size = populations_in_this_district(seguen_2010, "2010")
+
+
+# get health center populations sizes for hounde from 2006 to 2010 (usable data)
+
+# get health center populations sizes for Seguenega from 2006 to 2010 (usable data)
+hounde_2004_population_size = populations_in_this_district(hounde_2004, "2004")
+hounde_2006_population_size = populations_in_this_district(hounde_2006, "2006")
+hounde_2007_population_size = populations_in_this_district(seguen_2007, "2007")
+hounde_2008_population_size = populations_in_this_district(hounde_2008, "2008")
+hounde_2009_population_size = populations_in_this_district(hounde_2009, "2009")
+hounde_2010_population_size = populations_in_this_district(hounde_2010, "2010")
+
+# get populations sizes for Lena health centers in 2006 and 2007
+# first remove columns with lot's of NA's or missing data
+lena_2006 <- subset(lena_2006, select = -c(`LENA|dispe/mate bossora`, `LENA|nra kadomba`) )
+lena_2007 <- subset(lena_2007, select = -c(`LENA|nra kadomba`))
+
+lena_2006_population_size = populations_in_this_district(lena_2006, "2006")
+lena_2007_population_size = populations_in_this_district(lena_2007, "2007")
+
+Kvigue_2008 <- subset(Kvigue_2008, select = -c(`KARANGASSO VIGUE|csps dan`, `KARANGASSO VIGUE|csps yegueresso`,`KARANGASSO VIGUE|dispe diosso`))
+
+# get populations sizes for Lena health centers in 2008 and 2010
+# first remove columns with lot's of NA's or missing data.
+kvigue_2008_population_size = populations_in_this_district(Kvigue_2008, "2008")
+kvigue_2010_population_size = populations_in_this_district(Kvigue_2010, "2010")
+
+
+
+
+
+# non_epi_health_center_year_population_size<-list(
+#         seguen_2006_population_size = seguen_2006_population_size
+# )
 
 
 

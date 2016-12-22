@@ -194,11 +194,11 @@ if (initialGuessValues) {
     # params for model calibration with hyperendemic data.
     guess_lower_bound = c(
         beta0 = 0.00001, alpha = 1 / year, phi = 0.2 / year, Susc0 = 1, CarrierProp =
-            1, teta = 91, epsilon_a = 0,epsilon_b = 0,a0 = 1e-10
+            1, teta = 91, epsilon_a = 0,epsilon_b = 0,a0 = 0.002/30 # 1e-12 
     )
     guess_upper_bound = c(
         beta0 = +Inf, alpha = 52 / year, phi = 12 / year, Susc0 = N, CarrierProp =
-            N, teta = 112, epsilon_a = 1,epsilon_b = 1,a0 = 1
+            N, teta = 112, epsilon_a = 1,epsilon_b = 1,a0 = 0.012/30 #1
     )
     
     initial_guess_parms = c(
