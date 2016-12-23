@@ -15,7 +15,7 @@ heterogenous_mixing = heterogenous_mixing # turn this to TRUE to include actual
 
 nage = 4 # 4 age groupes  defined as <5 years; 5-12 years, 13-19, and 20+ years
 # the estimate WAIFW matrix by tartoff et al in dry season with minor epidemics
-npop = non_epi_health_center_year_population_size$seguen_2006_population_size$`csps bema`
+npop = seguen_2006_population_size$`csps bema`
 #npop = 1e+05
 #population size (if proportion , model state variables should add up to 1
 #fimmune   = 0.2 # fraction of population immune
