@@ -2,7 +2,7 @@ rm(list=ls())
 insert_age_structure = FALSE; heterogenous_mixing=FALSE
 source("R/run_first.R")
 source("R/models_parameters.R")
-dev.off() # clear all graphical devices and plots in the plotting area.
+#dev.off() # clear all graphical devices and plots in the plotting area.
 graphSettings() # seeting plotting parameters
 #=============================================================
 ## Parameters estimates when only invasion rate is forced

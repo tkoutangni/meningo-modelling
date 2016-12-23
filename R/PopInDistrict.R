@@ -39,9 +39,9 @@ kvigue_2010_population_size = populations_in_this_district(Kvigue_2010, "2010")
 
 
 
-# non_epi_health_center_year_population_size<-list(
-#         seguen_2006_population_size = seguen_2006_population_size
-# )
+non_epi_health_center_year_population_size<-list(
+        seguen_2006_population_size = seguen_2006_population_size
+)
 
 
 
