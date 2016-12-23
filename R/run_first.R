@@ -3,6 +3,7 @@
 #################################################################
 #rm(list=ls()) # clean current work environment
 #################################################################
+
 source("R/myFunctions.R",verbose = FALSE) # must load first.
 source("R/rpackages.R") # must load second
 #source("R/models_parameters.R") # load models parameters
@@ -12,8 +13,10 @@ source("R/SCIRS_harmonic_age.R")  # age structured and Immunity from C and I
 
 ##### ===================== Data scripts =====================
 source("R/GeneralDataLoading.R") # load data
-source("R/data_simple_mooving_week_average.R")
 source("R/data.cleaning.R")      # clean data
+source("R/data_simple_mooving_week_average.R")
+source("R/data_cleaning_continiue.R")
+
 
 
 ##### =============== Models fitting algo ===========
