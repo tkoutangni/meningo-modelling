@@ -206,7 +206,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
       objfunc = Objective_max_likelihood
       if(useLSQ) objfunc = Objective_least_square
       
-      fit_algo <- function(useMLE = useMLE, 
+      fit_algo <- function(useMLE = useMLE, objfunc = objfunc,
                            guess_parms = guess_parms,
                            lbound = lower_bound,
                            ubound = upper_bound) {
@@ -247,8 +247,9 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
         } # end fit_algo function
       
       ## Run the fit algo for the first time
-      #time.vector = time.vector
-      firstFit = fit_algo(useMLE = useMLE, guess_parms = guess_parms, lbound = lower_bound, ubound = upper_bound)
+      # if maximum likelihood is beeing used to fit the model, run the first round of simulation with leastsquares, then use
+      # the least squares estimates as starting conditions for the maximum likelihood
+      firstFit = fit_algo(useMLE = useMLE, objfunc = Objective_least_square , guess_parms = guess_parms, lbound = lower_bound, ubound = upper_bound)
       if(useMLE){
         new_guess_parms = coef(firstFit)
       }else{
@@ -259,9 +260,8 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
       #cat(new_guess_parms)
       # Rerun the optimisation algo with fit_par
       # run with the estimated params as initial guess
-      Fit = fit_algo(useMLE = useMLE, guess_parms = new_guess_parms, lbound = lower_bound, ubound = upper_bound)
+      Fit = fit_algo(useMLE = useMLE, objfunc , guess_parms = new_guess_parms, lbound = lower_bound, ubound = upper_bound)
       
-      #Fit=firstFit
       # get the estimated values of par
       if(useMLE){
         fit_par = coef(Fit)

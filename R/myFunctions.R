@@ -1183,6 +1183,17 @@ add_row_totals_per_model_variable<-function(age_structure_model_output){
   return(age_structure_model_output)
 }
 
+
+
+# remoove first and last row of data which are NAs
+non_missing_data<-function(data.frame){
+  # replace NA at the begining and end of the data time series by 0
+  #data.frame<-data.frame[c(1,nrow(data.frame)),]
+  # data.frame[c(1),]<-0
+  # data.frame[c(nrow(data.frame)),]<-0
+  non_missing_data=data.frame[complete.cases(data.frame)]
+  return(non_missing_data)
+}
 ####################################################
 
 # placing legend above graph

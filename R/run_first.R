@@ -12,8 +12,9 @@ source("R/SCIRS_harmonic_age.R")  # age structured and Immunity from C and I
 
 ##### ===================== Data scripts =====================
 source("R/GeneralDataLoading.R") # load data
-source("R/data.cleaning.R")      # clean data
 source("R/data_simple_mooving_week_average.R")
+source("R/data.cleaning.R")      # clean data
+
 
 ##### =============== Models fitting algo ===========
 #source("R/yearSpecificFittingAlgo_nov_2015.R",verbose = FALSE)
