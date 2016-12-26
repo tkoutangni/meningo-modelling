@@ -112,12 +112,12 @@ if(!file.exists("data/processed_data/new_processed_february_2016/mle_a0_beta0_Fo
   
   
   
-  mle_non_epi_houndeForc_beta0_2007 = mleYearSpecFit(district_id=2,
+  mle_non_epi_houndeForc_a0_beta0_2007 = mleYearSpecFit(district_id=2,
                                                      district_year_data = non_missing_data(hounde_2007), 
                                                      population_size = hounde_2007_population_size,
                                                      year_now = 2007, hc_vector= c(2,3,15),
-                                                     a0ForcingOnly=FALSE, beta0ForcingOnly = TRUE, 
-                                                     addCarriageConstrain = FALSE, show_plot = TRUE, verbose = TRUE,
+                                                     a0ForcingOnly=FALSE, beta0ForcingOnly = FALSE, 
+                                                     addCarriageConstrain = FALSE, show_plot = TRUE, verbose = FALSE,
                                                      # choose the appropriate method for algorithm
                                                      # use NLOPT_LN_BOBYQA or NLOPT_LN_COBYLA for LSQ fit with nloptr
                                                      # use L-BFGS-B for the bbmle package with mle2
@@ -173,11 +173,11 @@ if(!file.exists("data/processed_data/new_processed_february_2016/mle_a0_beta0_Fo
   
   
   
-  mle_non_epi_lenaForc_beta0_2007 = mleYearSpecFit(district_id=3,
+  mle_non_epi_lenaForc_a0_beta0_2007 = mleYearSpecFit(district_id=3,
                                                    district_year_data = non_missing_data(lena_2007), 
                                                    population_size = lena_2007_population_size,
                                                    year_now = 2007, hc_vector= c(1,3),
-                                                   a0ForcingOnly=FALSE, beta0ForcingOnly = TRUE, 
+                                                   a0ForcingOnly=FALSE, beta0ForcingOnly = FALSE, 
                                                    addCarriageConstrain = FALSE, show_plot = TRUE, verbose = TRUE,
                                                    # choose the appropriate method for algorithm
                                                    # use NLOPT_LN_BOBYQA or NLOPT_LN_COBYLA for LSQ fit with nloptr

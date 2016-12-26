@@ -264,3 +264,4 @@ mle_a0ForcEstimates_matrice = rbind(
 
 save(mle_a0ForcEstimates_matrice,
      file = "data/processed_data/new_processed_february_2016/mle_a0ForcEstimates_matrice.RData")
+
