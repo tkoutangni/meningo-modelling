@@ -136,14 +136,19 @@ sim.SCIRS_harmonic_age <- function(inits, vparameters, nd){
     
     if(sum(names(vparameters)%in%"Susc0")>0){
         # update the values of inital suceptibles and carriers
-        # in the inits vector, with their respective estimated values (Susc0, CarrierProp)
-        # and compute the initial recovered based on initial Susc0 and CarrierProp values
-        # I will rename CarrierProp to Carrier0 through all script later for less confusion.
+        # in the inits vector, with their respective estimated values (Susc01 to Susc04 , Carrier_01 to Carrier_04 )
+        # and compute the initial recovered based on initial Susceptibles and initial carriers values
+        #CarrierProp1 to CarrierProp1 are the initial numbers or proportion of carriers at the begining of the calendar year (I may need to change the variable name to initial_carriers through all files to avoid confusion)
         
-        inits["Carrier"] = as.numeric(vparameters["CarrierProp"]) 
-        inits["Susc"] = as.numeric(vparameters["Susc0"])
-        inits["Recov"] = N - as.numeric(inits["Susc"] - inits["Carrier"])
-        vparameters = vparameters[1:11]
+        inits[c(grep("Carrier",names(inits)))] = as.vector(vparameters[c(grep("CarrierProp",names(vparameters)))], mode='numeric')
+        inits[c(grep("Susc",names(inits)))] = as.vector(vparameters[c(grep("Susc",names(vparameters)))], mode='numeric')
+        inits[c(grep("Recov",names(inits)))] = N - as.vector((inits[c(grep("Susc",names(inits)))] -  inits[c(grep("Carrier",names(inits)))]), mode='numeric')
+        vparameters = vparameters[1:19]
+        
+        #inits["Carrier"] = as.numeric(vparameters["CarrierProp"]) 
+        #inits["Susc"] = as.numeric(vparameters["Susc0"])
+        #inits["Recov"] = N - as.numeric(inits["Susc"] - inits["Carrier"])
+        #vparameters = vparameters[1:11]
         
         # old script.
         #inits["Susc"] = as.numeric(vparameters["Susc0"])
@@ -158,7 +163,8 @@ sim.SCIRS_harmonic_age <- function(inits, vparameters, nd){
                                              func=SCIRS_harmonic_age, parms=vparameters))  
     # Gross approximation of weekly incidences from daily estimates of state  variables.
     # daily prediction of newI in each age groupe are somewhat similar within a given week.
-    SCIRS_harmonic_age.out[,c(18:21)] = SCIRS_harmonic_age.out[,c(18:21)]*week 
+    SCIRS_harmonic_age.out[,grep("newI", colnames(SCIRS_harmonic_age.out))] = SCIRS_harmonic_age.out[,grep("newI", colnames(SCIRS_harmonic_age.out))]*week
+    #SCIRS_harmonic_age.out[,c(18:21)] = SCIRS_harmonic_age.out[,c(18:21)]*week 
     return(SCIRS_harmonic_age.out)
     # also tried an integral function to compute weekly cases, but the results are similar
     # that of the Gross approximation above.
