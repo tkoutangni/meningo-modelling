@@ -1,4 +1,4 @@
-rm(list=ls())
+
 insert_age_structure = FALSE; heterogenous_mixing=FALSE
 source("R/run_first.R")
 source("R/models_parameters.R")
@@ -8,15 +8,7 @@ graphSettings() # seeting plotting parameters
 ## Parameters estimates when only invasion rate is forced
 #=============================================================
 
-# remoove first and last row of data which are NAs
-non_missing_data<-function(data.frame){
-  # replace NA at the begining and end of the data time series by 0
-  #data.frame<-data.frame[c(1,nrow(data.frame)),]
-  # data.frame[c(1),]<-0
-  # data.frame[c(nrow(data.frame)),]<-0
-  non_missing_data=data.frame[complete.cases(data.frame)]
-  return(non_missing_data)
-  }
+
 
 
 
