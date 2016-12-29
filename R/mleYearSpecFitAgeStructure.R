@@ -10,7 +10,7 @@
 ##====================================================
 
 ## defining objective function for parameter optimization.
-Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, time.vector, verbose=verbose) {
+Objective_max_likelihood_age_structure <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, time.vector, verbose=verbose) {
         current_parms_combination = vparameters
         names(guess_parms) = parmset
         current_parms_combination[parmset] <- guess_parms
@@ -51,7 +51,7 @@ Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), 
 } # end objective function.
 
 
-Objective_least_square <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, time.vector, verbose=verbose) {
+Objective_least_square_age_structure <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated=1, obs.data, time.vector, verbose=verbose) {
         current_parms_combination = vparameters
         names(guess_parms) = parmset
         current_parms_combination[parmset] <-guess_parms
@@ -191,25 +191,30 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                 cat("\n Fitting model to ",names(district_year_data)[i],"data. Please wait...\n")
                 hcIndex = i # health center column index in the database
                 N = population_size[hcIndex]*age_group_fraction
+                names(N)<- c("<5 years","5-12 years","13-19 years", "20+ years")
                 # age_group_fraction is the average fraction of the population in each of the
                 # nage groups: these fraction are computed from age distribution data from burkina-faso census data publicly available on the website 
                 # www.census.gov/population/international/data/idb
-                cat("\n population size for ", names(district_year_data)[i], ": ", round(N), "\n")
+                
+                cat("\n population size for ", names(district_year_data)[i], ": ", round(sum(N)), "\n")
+                cat("\n extrapolated population size for ", names(district_year_data)[i], " in the age groups: ", round(N), "\n")
                 #Format the right data
                 obs.data = subset(ready_data,select = c(hcIndex,julian_day)) # match the desired health center
-                # multiply incidence data in current hc with current hc population size to have case count back (as the cleaned data contained computed incidences)
-                obs.data = data.frame(time = coredata(obs.data[,2]), incid = coredata(obs.data[,1])*N)
-
-                #instead of incidence of cases (i.e. cases_count/N) ?
+                # multiply incidence data in current hc with current hc population size to have case count back (in the cleaned dataset incidences were directly computed as : cases_count/N)
+                obs.data = data.frame(time = coredata(obs.data[,2]), incid = coredata(obs.data[,1])*sum(N))
                 
+                #VERY IMPORTANT NOTICE RELATED TO THE LINE ABOVE!!!! (obs.data = ...)
+                # I multiplied obs.data$incid by sum(N) because we're still fitting the model to total case not age
+                # specific incidence of cases as we don't have data on age distribution of cases at a local health center level. One might assumes the age distribution of cases at district or country level is the same at the health center level, but we have no evidence for that yet. Also if we were to make that assumption of same age distribution of cases at district and health center level, we have no known source where to get the age distribution for the exact age classes considered in this simulation framework. So for now i decided not to apply just any age distribution of cases to the hc level data until i have appropriate data or information on that matter.
+                # OUR CURRENT DATABASE DOES NOT CONTAIN AGE OF THE REPORTED CASES AS THESE CASES ARE REPORTED WEEKLY IN NUMBERS
                 
                 # ! important for the mle2() function to know the names of the parameters
                 # being optimized when the first argument is a vector of all parameters
-                parnames(Objective_max_likelihood) <- c(names(guess_parms),"nbYearSimulated")
+                parnames(Objective_max_likelihood_age_structure) <- c(names(guess_parms),"nbYearSimulated")
                 
                 ## OPTIMISATION ALGORITHM
-                objfunc = Objective_max_likelihood
-                if(useLSQ) objfunc = Objective_least_square
+                objfunc = Objective_max_likelihood_age_structure
+                if(useLSQ) objfunc = Objective_least_square_age_structure
                 
                 fit_algo <- function(useMLE = useMLE, objfunc = objfunc,
                                      guess_parms = guess_parms,
@@ -254,7 +259,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                 ## Run the fit algo for the first time
                 # if maximum likelihood is beeing used to fit the model, run the first round of simulation with leastsquares, then use
                 # the least squares estimates as starting conditions for the maximum likelihood
-                firstFit = fit_algo(useMLE = useMLE, objfunc = Objective_least_square , guess_parms = guess_parms, lbound = lower_bound, ubound = upper_bound)
+                firstFit = fit_algo(useMLE = useMLE, objfunc = Objective_least_square_age_structure , guess_parms = guess_parms, lbound = lower_bound, ubound = upper_bound)
                 if(useMLE){
                         new_guess_parms = coef(firstFit)
                 }else{
@@ -283,15 +288,19 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                         fitted_parms[names(fit_par)] <- as.numeric(fit_par) # replacing the unknown parameters values with estimated values
                         
                         fitted_model <- sim.SCIRS_harmonic_age(inits,fitted_parms,nd = nbYearSimulated * year) # run model with those parameters
-                        fitted_model <- subset(fitted_model, select = c(time,Susc,Carrier,Ill,Recov,newI))
-                        fitted_model_all_var = tail(fitted_model,length(time.vector))
+                        # sum new cases in all age groups per week to get the total number of new cases
+                        fitted_model<- sum_incid_cases_and_carriers_colums(data_frame = fitted_model)
+                        fitted_model = fitted_model[1:length(time.vector),]
+                        
+                        #fitted_model <- subset(fitted_model, select = c(time,Susc,Carrier,Ill,Recov,newI))
+                        #fitted_model_all_var = tail(fitted_model,length(time.vector))
                         ## the Carrier vector
-                        carriageVector = fitted_model_all_var$Carrier # variable to plot later
+                        carriageVector = fitted_model$Carrier # variable to plot later
                         # chack if ineq_constrain on carriage worked
                         fold_change_prev_week_6_8_and_44_46 = mean(c(carriageVector[44:46])) / mean(c(carriageVector[8:6]))
                         
                         ## get the newI vector
-                        fitted_model = tail(fitted_model$newI,length(time.vector)) # change the name fitted_model at this
+                        fitted_model_newI = fitted_model$newI # change the name fitted_model at this
                         ## line letter for avoiding confusion because this vector contain only newI predictions and is different
                         ## from the fitted_model matrice returned by sim.SCIRS_harmonic_age.
                         
@@ -306,11 +315,9 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                                 par(mar = c(5,5,2,4), mfrow = c(2,3)) # plot margings and num of row and col
                         } #end if.
                         # prepare data and calibration results for plot
-                        fitted_model = (fitted_model / N) * per_100000
-                        obs.data$incid = (obs.data$incid / N) *
-                                per_100000
-                        carriageVector = (carriageVector / N) *
-                                1e+02
+                        fitted_model_newI= (fitted_model_newI / sum(N)) * per_100000
+                        obs.data$incid = (obs.data$incid / sum(N)) * per_100000
+                        carriageVector = (carriageVector / sum(N)) * 1e+02
                         
                         plot(obs.data[,2] ,las = 1,pch = 19, col = "black",xlab = "",type = "p",ylim =
                                      c(0,(
@@ -318,7 +325,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                                      )),ylab = ""
                         ) #ylim=c(0,(1.1*max(obs.data[-c(na.data.index),2]*1e+05)))
                         lines(
-                                fitted_model ,col = "red",type = "l",lwd = 2
+                                fitted_model_newI ,col = "red",type = "l",lwd = 2
                         )
                         #lines(carriageVector*100,col="blue",type="l",lwd=2)
                         # adding main title and ylab for the first variable ploted

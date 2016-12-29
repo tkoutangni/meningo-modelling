@@ -22,9 +22,12 @@ npop = seguen_2006_population_size$`csps bema`
 
 if(insert_age_structure){
     age_group_fraction = c(0.1871386, 0.1554741, 0.2324747, 0.4249126) # obtained from age distribution of burkina faso population  according to the 4 age groups defined by Tartof et al. (see below for details)
+    # age groups : <5 years; 5-12 years, 13-19, and 20+ years
+    names(age_group_fraction)<- c("<5 years","5-12 years","13-19 years", "20+ years")
     f = age_group_fraction
     #f = c(0.25,0.25, 0.25, 0.25) # assuming age classes, represent each 25% of the population.
     N =  npop*f  # Actual proportion/number of the total population in each age class
+    names(N)<- c("<5 years","5-12 years","13-19 years", "20+ years")
     nage = length(f)
     Carrier_0 = rep(1, nage) # initial proportion of assymp carriers in each age group
     Recov_0 = rep(0, nage)

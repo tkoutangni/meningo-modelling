@@ -22,6 +22,7 @@ source("R/data_cleaning_continiue.R")
 ##### =============== Models fitting algo ===========
 #source("R/yearSpecificFittingAlgo_nov_2015.R",verbose = FALSE)
 source("R/mleYearSpecFit.R")
+source("R/mleYearSpecFitAgeStructure.R")
 
 ##### Get age distribution of the burkina faso population according
 ##### to years.

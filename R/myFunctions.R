@@ -1194,6 +1194,23 @@ non_missing_data<-function(data.frame){
   non_missing_data=data.frame[complete.cases(data.frame)]
   return(non_missing_data)
 }
+
+
+sum_incid_cases_and_carriers_colums<-function(data_frame){
+        if (c("newI1")%in%colnames(data_frame)){
+                new_data_frame<- data.frame(
+                        "time" = data_frame[,"time"], 
+                        "newI" = rowSums(data_frame[,grep("newI", colnames(data_frame))]),
+                        "Carrier" = rowSums(data_frame[,grep("Carrier", colnames(data_frame))])
+                )
+        }else{
+                stop("The data.frame doesn't seem to come from an age structured simulation")
+        }
+        return (new_data_frame)
+        
+}
+
+
 ####################################################
 
 # placing legend above graph
