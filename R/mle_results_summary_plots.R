@@ -1,13 +1,16 @@
+
 load("data/processed_data/new_processed_february_2016/mle_a0ForcEstimates_matrice.RData")
 load("data/processed_data/new_processed_february_2016/mle_beta0ForcEstimates_matrice.RData")
 load("data/processed_data/new_processed_february_2016/mle_a0_beta0_ForcEstimates_matrice.RData")
 
+
 insert_age_structure = FALSE; heterogenous_mixing=FALSE
+source("R/run_first.R")
 source("R/models_parameters.R")
 
 base_text = "for 64 health center-years with complete data, across four health distrits of \nBurkina faso (2004-2010)."
 
-pdf(file = "figs/final_figs/mle_hyperendemic_trajectory_matching_plots.pdf")
+pdf(file = "figs/final_figs/mle_hyperendemic_models_estimations_plots.pdf")
 
 layout(1) # set graphical area for text display
 add_text_to_plot(paste("Results of model estimations using a poisson maximum likelihood approach.",""),font_cex = 1, valign = "center", halign = "left")
@@ -185,6 +188,7 @@ grid.arrange(plot2, plot1,
 
 dev.off() # end of producing pdf
 
+warning("\n A PDF file named 'mle_hyperendemic_model_estimations_plots.pdf\n' is created and stored in the folder: figs/final_figs")
 # install.packages('cowplot')
 # library('cowplot')
 # ggdraw() +
