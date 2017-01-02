@@ -16,7 +16,7 @@ toto = mleYearSpecFit(
         year_now = 2006, hc_vector = c(1:4,6),
         a0ForcingOnly =
                 FALSE, beta0ForcingOnly = FALSE,
-        addCarriageConstrain = FALSE, show_plot = TRUE, verbose = TRUE,
+        addCarriageConstrain = TRUE, show_plot = TRUE, verbose = TRUE,
         # choose the appropriate method for algorithm
         # use NLOPT_LN_BOBYQA or NLOPT_LN_COBYLA for LSQ fit with nloptr
         # use L-BFGS-B for the bbmle package with mle2
@@ -26,7 +26,15 @@ toto = mleYearSpecFit(
 )
 
 
-
-
-
+toto1 = mleYearSpecFit(district_id=1,
+               district_year_data = non_missing_data(seguen_2007), 
+               population_size = seguen_2007_population_size,
+               year_now = 2007, hc_vector= c(1:3,5,6),
+               a0ForcingOnly=FALSE, beta0ForcingOnly = FALSE, 
+               addCarriageConstrain = TRUE, show_plot = TRUE, verbose = TRUE,
+               # choose the appropriate method for algorithm
+               # use NLOPT_LN_BOBYQA or NLOPT_LN_COBYLA for LSQ fit with nloptr
+               # use L-BFGS-B for the bbmle package with mle2
+               algorithm = "NLOPT_LN_COBYLA",  useMLE=F, useLSQ = T,
+               n_iter = 10000)
 
