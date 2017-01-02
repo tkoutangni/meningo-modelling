@@ -1210,6 +1210,55 @@ sum_incid_cases_and_carriers_colums<-function(data_frame){
         
 }
 
+population_size_per_age_grp = function(population_data_per_age) {
+        # function to get population age stats in a given country in a given year, 
+        # then aggregate it according to age groups of interest
+        population_data_per_age$`Age class` <- NA
+        population_data_per_age[c("0":"4") + 1,]$`Age class` <-
+                "[0-4]"
+        population_data_per_age[c("5":"12") + 1,]$`Age class` <-
+                "[5-12]"
+        population_data_per_age[c("13":"19") + 1,]$`Age class` <-
+                "[13-19]"
+        population_data_per_age[c(21:89),]$`Age class` <- "20+"
+        
+        data_by_age_group = aggregate(
+                population_data_per_age[,c(2:4)], by = list("Age group" = population_data_per_age$`Age class`), sum
+        )
+        
+        data_by_age_group$`Both sex proportion` <-
+                (data_by_age_group$`Both sex`) / sum(data_by_age_group$`Both sex`)
+        
+        data_by_age_group$`Male proportion` <-
+                (data_by_age_group$Male) / sum(data_by_age_group$`Both sex`)
+        
+        data_by_age_group$`Female proportion` <-
+                (data_by_age_group$Female) / sum(data_by_age_group$`Both sex`)
+        
+        age_group_data_melt = melt(data_by_age_group, value.name = "Population", id.vars = "Age group")
+        
+        return(
+                list(
+                        data_by_age_group = data_by_age_group, age_group_data_melt = age_group_data_melt
+                )
+        )
+}
+
+# function to get the proportion of male, female or total proportion of both sex per age groups
+get_age_group_fraction = function(data_by_age_group, colname){
+        return(data_by_age_group[, colname])
+}
+
+get_age_grp_proportion = function(country = "UV", year_now){
+        # get the proportion of each of the defined age class in the general population
+        # of Burkina-faso
+        year_spec_age_data = get_population_age_stat_data(country,year_now)
+        year_spec_age_group_data = population_size_per_age_grp(year_spec_age_data)
+        get_age_grp = year_spec_age_group_data$data_by_age_group
+        age_group_fraction = get_age_group_fraction(get_age_grp, "Both sex proportion")
+        names(age_group_fraction)<- c("<5 years","5-12 years","13-19 years", "20+ years")
+        return(age_group_fraction)
+}
 
 ####################################################
 

@@ -55,4 +55,5 @@ other_district_melt_data_all_year = subset(
 hyperendemic_data_to_plot = rbind(other_district_melt_data_all_year, hounde_melt_data_all_year)
 
 hyperendemic_data_plots<- ggplot_time_series_all_years(hyperendemic_data_to_plot, ncol = 4) + theme_bw()
-eval(hyperendemic_data_plots)
+
+hyperendemic_data_plots

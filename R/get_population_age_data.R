@@ -43,26 +43,29 @@ gg_prop <- ggplot(data = data.frame()
 # getting and ploting age distribution data.
  
 ####################################
-burkina_age_data = get_population_age_stat_data(country = "UV", 2006)
-burkina_age_data$`Age class`<-NA
-burkina_age_data[c("0":"4")+1,]$`Age class`<-"[0-4]"
-burkina_age_data[c("5":"12")+1,]$`Age class`<-"[5-12]"
-burkina_age_data[c("13":"19")+1,]$`Age class`<-"[13-19]"
-burkina_age_data[c(21:89),]$`Age class`<-"20+"
+# # function to get population age stats in a given country in a given year, 
+# # then aggregate it according to age groups of interest
+# burkina_age_data = get_population_age_stat_data(country = "UV", 2006)
+# burkina_age_data$`Age class`<-NA
+# burkina_age_data[c("0":"4")+1,]$`Age class`<-"[0-4]"
+# burkina_age_data[c("5":"12")+1,]$`Age class`<-"[5-12]"
+# burkina_age_data[c("13":"19")+1,]$`Age class`<-"[13-19]"
+# burkina_age_data[c(21:89),]$`Age class`<-"20+"
+# 
+# # aggragate the data into specific age classes
+# # Compute the sum for the variables in 'burkina_age_data', grouped
+# # according to the age classe variable.
+# 
+# data_by_age_group = aggregate(burkina_age_data[,c(2:4)], by = list("Age group" = burkina_age_data$`Age class`), sum)
+# 
+# data_by_age_group$`Both sex proportion`<- (data_by_age_group$`Both sex`)/sum(data_by_age_group$`Both sex`)
+# 
+# data_by_age_group$`Male proportion`<- (data_by_age_group$Male)/sum(data_by_age_group$`Both sex`)
+# 
+# data_by_age_group$`Female proportion`<- (data_by_age_group$Female)/sum(data_by_age_group$`Both sex`)
+# 
+# burkina_age_data_melt = melt(data_by_age_group, value.name = "Population", id.vars = "Age group")
 
-# aggragate the data into specific age classes
-# Compute the sum for the variables in 'burkina_age_data', grouped
-# according to the age classe variable.
-
-data_by_age_group = aggregate(burkina_age_data[,c(2:4)], by = list("Age group" = burkina_age_data$`Age class`), sum)
-
-data_by_age_group$`Both sex proportion`<- (data_by_age_group$`Both sex`)/sum(data_by_age_group$`Both sex`)
-
-data_by_age_group$`Male proportion`<- (data_by_age_group$Male)/sum(data_by_age_group$`Both sex`)
-
-data_by_age_group$`Female proportion`<- (data_by_age_group$Female)/sum(data_by_age_group$`Both sex`)
-
-burkina_age_data_melt = melt(data_by_age_group, value.name = "Population", id.vars = "Age group")
 
 
 

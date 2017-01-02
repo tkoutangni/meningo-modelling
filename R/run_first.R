@@ -31,6 +31,12 @@ source("R/get_population_age_data.R")
 ### end loading.
 cat('\n Finished loading functions, parameters, and data \n')
 
+source("R/plot_all_non_epi_data.R"); print(hyperendemic_data_plots) # visualize observed data
+
+cat('\n Finished ploting the health centers data \n')
+cat(" \n================================================ \n")
+cat('\n Model estimation can be run now for each of the 3 models \n')
+
 # other tested models.
 
 #source("SCIS_harmonic.R")         # SCIS model.

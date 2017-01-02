@@ -180,10 +180,10 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
         year_now = as.character(year_now) # indicating year of data record as a character
         time.vector = coredata(ready_data$julian_day) # the time vector at with to compare model to data
         population_size<-unlist(population_size)
-        print(cbind(population_size))
+        age_group_fraction = get_age_grp_proportion("UV", year_now)
+        #print(cbind(population_size))
         
-        cat("\n Will fit the model to the following health centers: \n ", names(district_year_data)[c(hc_vector)] )
-        
+        cat("\n Will fit the model to the following health centers: \n ", names(district_year_data)[c(hc_vector)])
         
         for (i in hc_vector) {
                 

@@ -19,11 +19,10 @@ npop = seguen_2006_population_size$`csps bema`
 #npop = 1e+05
 #population size (if proportion , model state variables should add up to 1
 #fimmune   = 0.2 # fraction of population immune
-
 if(insert_age_structure){
-    age_group_fraction = c(0.1871386, 0.1554741, 0.2324747, 0.4249126) # obtained from age distribution of burkina faso population  according to the 4 age groups defined by Tartof et al. (see below for details)
+    age_group_fraction = get_age_grp_proportion("UV", 2006) # First argument is the country code
+     # obtained from age distribution of burkina faso population  according to the 4 age groups defined by Tartof et al. (see below for details)
     # age groups : <5 years; 5-12 years, 13-19, and 20+ years
-    names(age_group_fraction)<- c("<5 years","5-12 years","13-19 years", "20+ years")
     f = age_group_fraction
     #f = c(0.25,0.25, 0.25, 0.25) # assuming age classes, represent each 25% of the population.
     N =  npop*f  # Actual proportion/number of the total population in each age class
@@ -122,24 +121,42 @@ C = diag(rep(1,nage))
 
 
 if(insert_age_structure & heterogenous_mixing){
-    C = matrix(data = 0, nrow = nage, ncol = nage)
+    tartofC = matrix(data = 0, nrow = nage, ncol = nage)
     #Now using the actual WAIFW matrice estimated by tartof et al.
-    C[1,1] = 126.8
-    C[1,2] = 48.1
-    C[1,3] = 47.8
-    C[1,4] = 25.2
-    C[2,1] = 144.7
-    C[2,2] = 41.7
-    C[2,3] = 66.6
-    C[2,4] = 24.4
-    C[3,1] = 83.9
-    C[3,2] = 232.9
-    C[3,3] = 235.3
-    C[3,4] = 44.5
-    C[4,1] = 49.6
-    C[4,2] = 89.5
-    C[4,3] = 76.0
-    C[4,4] = 138.1
+    tartofC[1,1] = 126.8
+    tartofC[1,2] = 48.1
+    tartofC[1,3] = 47.8
+    tartofC[1,4] = 25.2
+    tartofC[2,1] = 144.7
+    tartofC[2,2] = 41.7
+    tartofC[2,3] = 66.6
+    tartofC[2,4] = 24.4
+    tartofC[3,1] = 83.9
+    tartofC[3,2] = 232.9
+    tartofC[3,3] = 235.3
+    tartofC[3,4] = 44.5
+    tartofC[4,1] = 49.6
+    tartofC[4,2] = 89.5
+    tartofC[4,3] = 76.0
+    tartofC[4,4] = 138.1
+
+    # devide back by 100,000 to get the force of infection attributable to 
+    # contact between a susceptible individal in the ith age-group and an infectious individual in the jth age group
+    C = tartofC/100000 
+    
+    prop_colonised = c(0.72/100, 0.65/100, 0.94/100, 0.41/100) # the average proportion of colonized individuals in the respective age groups as estimated by tartof et al in hyperendemic dry seasons (dry season with minor epidemics).
+    # get the rate at which indiduals come into effective contact between the different age groups
+    C[,1] = C[,1]/prop_colonised[1] 
+    C[,2] = C[,2]/prop_colonised[2]
+    C[,3] = C[,3]/prop_colonised[3]
+    C[,4] = C[,4]/prop_colonised[4]
+    
+    # We then obtain a matrix of who acquired infection from whom
+    
+    # After deviding each element of the matrix by 365 we then obtain the rate at which individuals in the ith age group comes onto effective contact with individuals in the jth age-group in units of per days
+    # 
+    C = C/365
+    C = C*N
 }
 
 

@@ -1,4 +1,4 @@
-insert_age_structure = TRUE; heterogenous_mixing=FALSE
+insert_age_structure = TRUE; heterogenous_mixing=TRUE
 source("R/run_first.R")
 source("R/models_parameters.R")
 #dev.off() # clear all graphical devices and plots in the plotting area.
@@ -24,3 +24,9 @@ toto = mleYearSpecFit(
                 F, useLSQ = T,
         n_iter = 5000
 )
+
+
+
+
+
+
