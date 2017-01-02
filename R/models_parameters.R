@@ -156,7 +156,7 @@ if(insert_age_structure & heterogenous_mixing){
     # After deviding each element of the matrix by 365 we then obtain the rate at which individuals in the ith age group comes onto effective contact with individuals in the jth age-group in units of per days
     # 
     C = C/365
-    C = C*N
+    #C = C*N
 }
 
 
