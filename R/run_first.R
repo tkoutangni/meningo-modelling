@@ -3,9 +3,9 @@
 #################################################################
 #rm(list=ls()) # clean current work environment
 #################################################################
-
-source("R/myFunctions.R",verbose = FALSE) # must load first.
-source("R/rpackages.R") # must load second
+source("R/rpackages.R") # must load first ! important
+source("R/myFunctions.R",verbose = FALSE) # must load second!!.
+# MODELS PARAMETERS ARE LOADED INTO WORKSPACE WHEN NEEDED
 #source("R/models_parameters.R") # load models parameters
 # SCIRS model with seasonal forcing, and immunity from cariage and disease.
 source("R/SCIRS_harmonic.R")      # Immunity from C and I

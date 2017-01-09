@@ -7,8 +7,22 @@
 # lubridate contains functions usefull for time series manipulation
 # gplots contain textplot() function to display text information in a graphic.
 
+# define a custom function to install packages only if they are not already installed yet.
+installPackage <- function(packageName) {
+  #scheck if a package is installed then install it if not.
+  #@ parmeter : a character representing the package name
+  if (packageName %in% rownames(installed.packages()) ==  FALSE) {
+    cat("\nCOSTUM WARNING : In case package installation fail, please make sure your computer is connected to internet.\n")
+    install.packages(packageName, repos = "https://cran.univ-paris1.fr/")
+  }else{
+    cat("COSTUM MESSAGE: ", packageName, " package was already installed.\n")
+  }
+} # installPackage ends
+
+
 packages <- c(
-    "deSolve","zoo","shape","lubridate","lattice","latticeExtra","FME", "hydroGOF","ggplot2","gplots", "data.table", "bbmle", "XML", "reshape2", "plyr","nloptr","scales", "ggthemes"
+    "deSolve","zoo","shape","lubridate","lattice","latticeExtra","FME", "hydroGOF","ggplot2","gplots", 
+    "data.table", "bbmle", "XML", "reshape2", "plyr","nloptr","scales", "ggthemes", "gridExtra"
 )
 
 #install packages
@@ -17,4 +31,4 @@ lapply(packages, installPackage)
 #load packages
 lapply(packages, require, character.only = T)
 
-cat('finished loading packages...\n')
+cat('Necessary packages are now installed and already loaded into the current envirement or workspace...\n')

@@ -4,7 +4,9 @@ get_population_age_stat_data <- function(country, year) {
     # https://en.wikipedia.org/wiki/List_of_FIPS_country_codes
     # eg : "UV" for UPPER VOLTA (burkina faso)
     # base url for 5 year class
-    # base_url<- "http://www.census.gov/population/international/data/idb/region.php?N=%20Results%20&T=10&A=separate&RT=0&Y=" 
+    cat("\n-Connecting to the internet to get age data...\n ")
+    cat("\n-If an error is raised in relation to age data then check your internet connection \n Or the url for collecting age data may have changed since implementation of this function.")
+    cat("\n-Only in such event you may want to open the file 'get_population_age_data.R' to update the url for accessing the data online. ELSE evrything is OK :)\n")
     base_url = "http://www.census.gov/population/international/data/idb/region.php?N=%20Results%20&T=15&A=separate&RT=0&Y="
     country_query <- "&R=-1&C="
     url <- paste0(base_url, year, country_query, country)

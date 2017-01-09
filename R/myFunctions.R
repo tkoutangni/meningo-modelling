@@ -133,15 +133,17 @@ saveWorkspace <- function(fileName = " ") {
     return(save.image(file = paste(addSysDate(fileName),"RData",sep = ".")))
 } # saveWorkspace ends.
 
-installPackage <- function(packageName) {
-    #scheck if a package is installed then install it if not.
-    #@ parmeter : a character representing the package name
-    if (packageName %in% rownames(installed.packages()) ==  FALSE) {
-        install.packages(packageName, repos = "https://cran.univ-paris1.fr/")
-    }else{
-        cat("COSTUM MESSAGE: ", packageName, " package was already installed.\n")
-    }
-} # installPackage ends
+# installPackage IS MOVED TO rpackage.R file for refactoring 'runfirst.R' execusion flow
+
+# installPackage <- function(packageName) {
+#     #scheck if a package is installed then install it if not.
+#     #@ parmeter : a character representing the package name
+#     if (packageName %in% rownames(installed.packages()) ==  FALSE) {
+#         install.packages(packageName, repos = "https://cran.univ-paris1.fr/")
+#     }else{
+#         cat("COSTUM MESSAGE: ", packageName, " package was already installed.\n")
+#     }
+# } # installPackage ends
 
 addTenthPowerTextToPlot <- function(power) {
     # function to add mtext x10^-y to the plot.
@@ -1072,7 +1074,8 @@ get_district_name <- function(paramEstimate_matrix) {
 ## ggplot options:
 # A ggplot function to plot age structured model simulation output.
 ## ggplot options:
-library(ggplot2)
+#library(ggplot2)
+
 theme_opts = theme(
     axis.text = element_text(size = 14),
     legend.key = element_rect(fill = "white", colour = NA),
@@ -1186,14 +1189,19 @@ add_row_totals_per_model_variable<-function(age_structure_model_output){
 
 
 # remoove first and last row of data which are NAs
-non_missing_data<-function(data.frame){
+non_missing_data<-function(data){
   # replace NA at the begining and end of the data time series by 0
-  #data.frame<-data.frame[c(1,nrow(data.frame)),]
-  # data.frame[c(1),]<-0
-  # data.frame[c(nrow(data.frame)),]<-0
-  non_missing_data=data.frame[complete.cases(data.frame)]
-  return(non_missing_data)
+  data = as.data.frame(data)
+  data[is.na(data)] <- 0
+  #non_missing_data=data.frame[complete.cases(data.frame)]
+  return(data)
 }
+
+
+# na.zero <- function (x) {
+#   x[is.na(coredata(x))] <- 0
+#   return(x)
+# }
 
 
 sum_incid_cases_and_carriers_colums<-function(data_frame){

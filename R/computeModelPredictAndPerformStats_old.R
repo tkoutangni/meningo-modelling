@@ -1,8 +1,10 @@
-#source("check_path_to_working_directory.R")
-#source("loadFunctions.R")
-load("../data/processed_data/new_processed_february_2016/a0ForcEstimates_matrice.RData")
-load("../data/processed_data/new_processed_february_2016/beta0ForcEstimates_matrice.RData")
-load("../data/processed_data/new_processed_february_2016/a0_beta0_ForcEstimates_matrice.RData")
+insert_age_structure = FALSE; heterogenous_mixing=FALSE
+source("R/run_first.R")
+source("R/models_parameters.R")
+
+load("data/processed_data/new_processed_february_2016/a0ForcEstimates_matrice.RData")
+load("data/processed_data/new_processed_february_2016/beta0ForcEstimates_matrice.RData")
+load("data/processed_data/new_processed_february_2016/a0_beta0_ForcEstimates_matrice.RData")
 
 #dev.off() # clear all graphical devices and plots in the plotting area.
 
@@ -223,7 +225,7 @@ perform_stats_to_plot_labels<-c('Rsquared','RSR','PB(%)')
 perform_stats_to_plot$variable_label<-factor(perform_stats_to_plot$variable,labels=perform_stats_to_plot_labels)
 
 ##================================================
-require(ggplot2)
+#require(ggplot2)
 plot1<-ggplot(data = perform_stats_to_plot, aes(x=variable_label, y=value, fill=model)) + 
 geom_boxplot() + xlab("Performence Statistics")
 plot1 <- plot1 + facet_wrap( ~ variable_label, scales="free",nrow = 1)

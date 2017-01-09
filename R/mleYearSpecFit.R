@@ -31,23 +31,19 @@ Objective_max_likelihood <- function(guess_parms, parmset = names(guess_parms), 
   #print(cbind("model"= log(out$incid), "data" = log(obs.data$incid)))
   #print(cbind("model" = round(out$incid,2),"data" = round(obs.data$incid,2),"carrier" = round(out$Carrier,2)))
   
-  # function for maximizi?ng the log likelihood
+  # function for maximizing the log likelihood
 
     # take the negative loglikelihood in order to minimize the function toward 0.
   
     negLogLik = -sum(dpois(
-      x = round((obs.data$incid)),lambda = ((out$incid)+1e-12),log = T
+      x = round((obs.data$incid))+1e-12,lambda = ((out$incid)),log = T
     ))
     
-    if(is.nan(negLogLik)){
-            negLogLik = 1e+05
-    }
-    
-    #   poissonLoglik = sum(dnorm(
-    #     x = round(as.numeric(out$incid)), mean = (as.numeric(obs.data$incid)+1e-12), 
-    #     sd=(as.numeric(obs.data$incid)+1e-12), log = T
-    #   ))
-  
+    # negLogLik = -sum(dnorm(
+    #   x = (obs.data$incid),mean = ((out$incid)), sd= sd(obs.data$incid),log = T
+    # ))
+    # 
+    if(is.nan(negLogLik)){negLogLik = 1e+05}
   
   if(verbose) cat("\n Negative Log-Likelihood = ",negLogLik, "\n")
   return(negLogLik)
@@ -232,7 +228,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                 eval_g_ineq = ineqConstrain, # the inequality constrain function
                 opts = list(
                   "algorithm" = algorithm, "print_level" = 0,
-                  "xtol_rel" = 1e-08, "maxeval" = n_iter
+                  "xtol_rel" = 1e-12, "maxeval" = n_iter
                 ),
                 lb = lbound,
                 ub = ubound, 
@@ -260,7 +256,12 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
       #cat(new_guess_parms)
       # Rerun the optimisation algo with fit_par
       # run with the estimated params as initial guess
-      Fit = fit_algo(useMLE = useMLE, objfunc , guess_parms = new_guess_parms, lbound = lower_bound, ubound = upper_bound)
+    
+      # n_iter = 40000 # increase nb iteration for maximum likelihood and use parameters estimates of the least squares as starting point for 
+      # the likelihood estimation. + use those same least squares parameters estimates as lower bound of the parameter space to search during
+      # the likelihood estimation.
+      #Fit = fit_algo(useMLE = useMLE, objfunc , guess_parms = new_guess_parms, lbound = lower_bound, ubound = upper_bound)
+      Fit = fit_algo(useMLE = useMLE, objfunc , guess_parms = new_guess_parms, lbound = new_guess_parms, ubound = upper_bound)
       
       # get the estimated values of par
       if(useMLE){
@@ -374,7 +375,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
               paste(
                 a[0],'-fold=',.(a_fold),"; ",beta[0],'-fold=',.(beta_fold)
               )
-            ),col.sub = "blue",cex.sub = 1.1
+            ),col.sub = "black",cex.sub = 1.1
           )
         }
         

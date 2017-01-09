@@ -33,17 +33,15 @@ Objective_max_likelihood_age_structure <- function(guess_parms, parmset = names(
         # take the negative loglikelihood in order to minimize the function toward 0.
         
         negLogLik = -sum(dpois(
-                x = round((obs.data$incid)),lambda = ((out$incid)+1e-12),log = T
+          x = round((obs.data$incid))+1e-12,lambda = ((out$incid)),log = T
         ))
         
-        if(is.nan(negLogLik)){
-                negLogLik = 1e+05
-        }
+        # negLogLik = -sum(dnorm(
+        #   x = (obs.data$incid),mean = ((out$incid)), sd= sd(obs.data$incid),log = T
+        # ))
+        # 
         
-        #   poissonLoglik = sum(dnorm(
-        #     x = round(as.numeric(out$incid)), mean = (as.numeric(obs.data$incid)+1e-12), 
-        #     sd=(as.numeric(obs.data$incid)+1e-12), log = T
-        #   ))
+        if(is.nan(negLogLik)){negLogLik = 1e+05}
         
         
         if(verbose) cat("\n Negative Log-Likelihood = ",negLogLik, "\n")
@@ -79,7 +77,7 @@ Objective_least_square_age_structure <- function(guess_parms, parmset = names(gu
 } # end objective function.
 
 # inequality constraints function as an additional criteria to the Objective function
-ineqConstrainFunction <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated, obs.data, time.vector, verbose=verbose) {
+ineqConstrainFunction_age_str <- function(guess_parms, parmset = names(guess_parms), nbYearSimulated, obs.data, time.vector, verbose=verbose) {
         #expectedMaxCarriagePrev = 10*1e-02 # 6 percent according to kristiansen et al paper
         current_parms_combination = vparameters
         names(guess_parms) = parmset
@@ -127,7 +125,7 @@ ineqConstrainFunction <- function(guess_parms, parmset = names(guess_parms), nbY
 # # choose one of the optim algorithm
 # algorithm = "L-BFGS-B" 
 # n_iter = NULL
-mleYearSpecFit <-function(district_id, district_year_data, year_now,
+mleYearSpecFit_age_str <-function(district_id, district_year_data, year_now,
                           hc_vector, population_size,
                           a0ForcingOnly,# must be a boolean
                           beta0ForcingOnly,# must be a boolean
@@ -170,7 +168,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
         
         nbYearSimulated = 1 # Must be at least equal to the number of years of the observed data time serie
         if (addCarriageConstrain) {
-                ineqConstrain = ineqConstrainFunction
+                ineqConstrain = ineqConstrainFunction_age_str
         }else{
                 ineqConstrain = NULL
         }# end if addCarriageConstrain
@@ -242,7 +240,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                                         eval_g_ineq = ineqConstrain, # the inequality constrain function
                                         opts = list(
                                                 "algorithm" = algorithm, "print_level" = 0,
-                                                "xtol_rel" = 1e-08, "maxeval" = n_iter
+                                                "xtol_rel" = 1e-12, "maxeval" = n_iter
                                         ),
                                         lb = lbound,
                                         ub = ubound, 
@@ -270,7 +268,11 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                 #cat(new_guess_parms)
                 # Rerun the optimisation algo with fit_par
                 # run with the estimated params as initial guess
-                Fit = fit_algo(useMLE = useMLE, objfunc , guess_parms = new_guess_parms, lbound = lower_bound, ubound = upper_bound)
+                
+                # n_iter = 40000 # increase nb iteration for maximum likelihood and use parameters estimates of the least squares as starting point for 
+                # the likelihood estimation. + use those same least squares parameters estimates as lower bound of the parameter space to search during
+                # the likelihood estimation.
+                Fit = fit_algo(useMLE = useMLE, objfunc , guess_parms = new_guess_parms, lbound = new_guess_parms, ubound = upper_bound)
                 
                 # get the estimated values of par
                 if(useMLE){
@@ -386,7 +388,7 @@ mleYearSpecFit <-function(district_id, district_year_data, year_now,
                                                 paste(
                                                         a[0],'-fold=',.(a_fold),"; ",beta[0],'-fold=',.(beta_fold)
                                                 )
-                                        ),col.sub = "blue",cex.sub = 1.1
+                                        ),col.sub = "black",cex.sub = 1.1
                                 )
                         }
                         

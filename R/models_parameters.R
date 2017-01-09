@@ -143,7 +143,6 @@ if(insert_age_structure & heterogenous_mixing){
     # devide back by 100,000 to get the force of infection attributable to 
     # contact between a susceptible individal in the ith age-group and an infectious individual in the jth age group
     C = tartofC/100000 
-    
     prop_colonised = c(0.72/100, 0.65/100, 0.94/100, 0.41/100) # the average proportion of colonized individuals in the respective age groups as estimated by tartof et al in hyperendemic dry seasons (dry season with minor epidemics).
     # get the rate at which indiduals come into effective contact between the different age groups
     C[,1] = C[,1]/prop_colonised[1] 
@@ -155,8 +154,8 @@ if(insert_age_structure & heterogenous_mixing){
     
     # After deviding each element of the matrix by 365 we then obtain the rate at which individuals in the ith age group comes onto effective contact with individuals in the jth age-group in units of per days
     # 
-    C = C/365
-    #C = C*N
+    #C = C/365
+
 }
 
 
@@ -208,13 +207,13 @@ is_a0Constant = FALSE # Default to FALSE
 initialGuessValues = TRUE
 if (initialGuessValues) {
     # params guess lower and upper bound for model calibration with hyperendemic data.
-    #guess_lower_bound = c(beta0 =0.00001, alpha=1/year, phi=0.2/year, Susc0=0, CarrierProp=0, teta=91, epsilon_a=0,epsilon_b=0,a0=0.002/30)
+    #guess_lower_bound = c(beta0 =0.00001, alpha=1/year, phi=0.2/year, Susc0 = 0, CarrierProp=0, teta=91, epsilon_a=0,epsilon_b=0,a0=0.002/30)
     #guess_upper_bound = c(beta0 =+Inf, alpha=52/year, phi=12/year, Susc0=1, CarrierProp=1, teta=112, epsilon_a=1,epsilon_b=1,a0=0.012/30)
     
     # params for model calibration with hyperendemic data.
     guess_lower_bound = c(
         beta0 = 0.00001, alpha = 1 / year, phi = 0.2 / year, Susc0 = (N -(N-1)), CarrierProp =
-                (N -(N-1)), teta = 91, epsilon_a = 0,epsilon_b = 0,a0 = 0.002/30 # 1e-12 
+                (N -(N-1)), teta = 91, epsilon_a = 0,epsilon_b = 0,a0 = 0.002/30
     )
     guess_upper_bound = c(
         beta0 = +Inf, alpha = 52 / year, phi = 12 / year, Susc0 = N, CarrierProp =

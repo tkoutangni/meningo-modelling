@@ -181,8 +181,8 @@ model_1_fig_text = paste('Figure 4. Distribution of parameters estimates and mod
 add_text_to_plot( model_1_fig_text, font_cex=1, valign = 'center', halign = 'left')
 graphSettings() # set the graphical parameters.
 
-install.packages("gridExtra")
-library("gridExtra")
+#install.packages("gridExtra")
+#library("gridExtra")
 grid.arrange(plot2, plot1,
              ncol=1, nrow=2, widths=c(2), heights=c(2,1))
 
