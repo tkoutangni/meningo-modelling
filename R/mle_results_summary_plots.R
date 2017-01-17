@@ -1,4 +1,4 @@
-
+rm(list = ls())
 load("data/processed_data/new_processed_february_2016/mle_a0ForcEstimates_matrice.RData")
 load("data/processed_data/new_processed_february_2016/mle_beta0ForcEstimates_matrice.RData")
 load("data/processed_data/new_processed_february_2016/mle_a0_beta0_ForcEstimates_matrice.RData")
@@ -7,10 +7,16 @@ load("data/processed_data/new_processed_february_2016/mle_a0_beta0_ForcEstimates
 insert_age_structure = FALSE; heterogenous_mixing=FALSE
 source("R/run_first.R")
 source("R/models_parameters.R")
+source("R/mle_computeModelPredictAndPerformStats.R")
 
 base_text = "for 64 health center-years with complete data, across four health distrits of \nBurkina faso (2004-2010)."
 
-pdf(file = "figs/final_figs/mle_hyperendemic_models_estimations_plots.pdf")
+
+# pdf options
+
+#pdf.options(width = 8.267, height = 11.692, family="Times")
+pdf(file = "figs/final_figs/mle_hyperendemic_models_estimations_plots_updated1.pdf", 
+    paper = "a4r" , family = "Times", pointsize =12)
 
 layout(1) # set graphical area for text display
 add_text_to_plot(paste("Results of model estimations using a poisson maximum likelihood approach.",""),font_cex = 1, valign = "center", halign = "left")
@@ -107,13 +113,13 @@ mle_a0_beta0_ForcEstimates_matrice$BIC = log(mle_a0_beta0_ForcEstimates_matrice$
 
 library(reshape2)
 mle_a0ForcEstimates_matrice.m <- melt(mle_a0ForcEstimates_matrice, id.var = "district")
-mle_a0ForcEstimates_matrice.m$model = "model1"
+mle_a0ForcEstimates_matrice.m$model = "model1-Inv"
 
 mle_beta0ForcEstimates_matrice.m <- melt(mle_beta0ForcEstimates_matrice, id.var = "district")
-mle_beta0ForcEstimates_matrice.m$model = "model2"
+mle_beta0ForcEstimates_matrice.m$model = "model2-Transm"
 
 mle_a0_beta0_ForcEstimates_matrice.m <- melt(mle_a0_beta0_ForcEstimates_matrice, id.var = "district")
-mle_a0_beta0_ForcEstimates_matrice.m$model = "model3"
+mle_a0_beta0_ForcEstimates_matrice.m$model = "model3-Inv-Transm"
 
 
 # merging the reshaped estimates matrices
@@ -138,16 +144,20 @@ perform_stats_to_plot <- subset(merged.estimates, variable == 'Rsquared' | varia
 param_to_plot_labels<-c('Mean transmission /day',
                         'Carriage duration (weeks)',
                         'Imunity duration (years)',
-                        'Initial suseptibles',
+                        'Initial susceptibles',
                         'Initial carriers',
                         'Peak time (week number)',
-                        'Forc.amplitude inv.',
-                        'Mean Invasion /day',
-                        'Forc.amplitude transm.')
+                        'Seasonal forcing of invasion',
+                        'Mean invasion /day',
+                        'Seasonal forcing of transmission')
 
 param_to_plot$variable_label<-factor(param_to_plot$variable,labels=param_to_plot_labels)
 
-perform_stats_to_plot_labels<-c('AICc', 'BIC', 'Rsquared','RSR','PB(%)')
+#perform_stats_to_plot_labels<-c('AICc', 'BIC', 'Rsquared','RSR','PB(%)')
+perform_stats_to_plot_labels<-c('Akaike information criterion (AICc)', 
+'Bayesian information criterion (BIC)', 'Variability in data explained by each model',
+'Ratio of Root-Mean-Squared-Error to data standard deviation (RSR)','Percent Bias (PB)')
+
 
 perform_stats_to_plot$variable_label<-factor(perform_stats_to_plot$variable,labels=perform_stats_to_plot_labels)
 
@@ -155,9 +165,12 @@ perform_stats_to_plot$variable_label<-factor(perform_stats_to_plot$variable,labe
 require(ggplot2)
 plot1<-ggplot(data = perform_stats_to_plot, aes(x=variable_label, y=value, fill=model)) + 
   geom_boxplot() + xlab("Performence Statistics")
-plot1 <- plot1 + facet_wrap( ~ variable_label, scales="free",nrow = 1)
-plot1 <- plot1 + xlab("") + ylab("Value") + ggtitle("")
+plot1 <- plot1 + facet_wrap( ~ variable_label, scales="free",nrow = 2, labeller= label_wrap_gen(width = 25))
+plot1 <- plot1 + xlab(" ") + ylab("Value") + ggtitle("Distribution of model performance stats across the 64 health center−years")
 plot1 <- plot1 + guides(fill=guide_legend(title="Models"))
+plot1 <- plot1 + my_theme_for_facet
+#plot1
+
 #plot1
 
 
@@ -165,10 +178,10 @@ plot2 <- ggplot(data = param_to_plot, aes(x=variable_label, y=value)) +
   geom_boxplot(aes(fill=model))
 # if you want color for points replace group with colour=Label
 #plot2 <- plot2 + geom_point(aes(y=value, group=model), position = position_dodge(width=0.75))
-plot2 <- plot2 + facet_wrap( ~ variable_label, scales="free",nrow = 4)
-plot2 <- plot2 + xlab("") + ylab("Value") + ggtitle("")
+plot2 <- plot2 + facet_wrap( ~ variable_label, scales="free",nrow = 4, labeller= label_wrap_gen(width = 25))
+plot2 <- plot2 + xlab("") + ylab("Value") + ggtitle("Distribution of parameters estimates across the 64 health center−years")
 plot2 <- plot2 + guides(fill=guide_legend(title="Models"))
-#plot2 # important to run until this line to show the plot.
+plot2<-plot2 + my_theme_for_facet
 
 #nf <- layout(matrix(c(1,1,2,2),nrow=2,ncol=2,byrow = TRUE), widths=c(2,1), heights=c(2,1), TRUE)
 #layout.show(nf)
@@ -181,17 +194,28 @@ model_1_fig_text = paste('Figure 4. Distribution of parameters estimates and mod
 add_text_to_plot( model_1_fig_text, font_cex=1, valign = 'center', halign = 'left')
 graphSettings() # set the graphical parameters.
 
+layout(1)
+graphSettings()
+print(plot1)
+
+layout(1)
+graphSettings() # set the graphical parameters.
+print(plot2)
+
+
 #install.packages("gridExtra")
 #library("gridExtra")
-grid.arrange(plot2, plot1,
-             ncol=1, nrow=2, widths=c(2), heights=c(2,1))
+# grid.arrange(plot2, plot1,
+#              ncol=1, nrow=2, widths=c(2), heights=c(2,1))
 
 dev.off() # end of producing pdf
 
-warning("\n A PDF file named 'mle_hyperendemic_model_estimations_plots.pdf\n' is created and stored in the folder: figs/final_figs")
+warning("\n A PDF file named 'mle_hyperendemic_model_estimations_plots_updates.pdf\n' is created and stored in the folder: figs/final_figs")
 # install.packages('cowplot')
 # library('cowplot')
 # ggdraw() +
 #   draw_plot_label(c("A", "B"), c(0, 0, 0.5), c(1, 0.5, 0.5), size = 15)
 #===================================================================================================================
 # plotting results to PDF
+
+

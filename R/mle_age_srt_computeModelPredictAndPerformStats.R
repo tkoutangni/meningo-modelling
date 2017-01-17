@@ -1,5 +1,5 @@
 
-mle_computeModelPredictionAndPerformStat <-
+mle_age_str_computeModelPredictionAndPerformStat <-
   function(paramEstimatesMatrice) {
     # A function to compute model prediction based on best fitted parameters
     # estimate obtain from optimisation routine it also compute some summary
@@ -49,15 +49,31 @@ mle_computeModelPredictionAndPerformStat <-
       vector(mode = "numeric", length = nrow(paramEstimatesMatrice))
     beta_fold <-
       vector(mode = "numeric", length = nrow(paramEstimatesMatrice))
-    
+    # copy fixed and unknow parameters vector
     current_parms_combination = vparameters
-    
+    #===
+    # get names of the parameters estimates matrice columns
+    parm_matrice_colnames = colnames(paramEstimatesMatrice)
+    susc_colnames = parm_matrice_colnames[grep("Susc", parm_matrice_colnames)]
+    carrier_colnames = parm_matrice_colnames[grep("Carrier", parm_matrice_colnames)]
+    #===
     for (i in seq_along(paramEstimatesMatrice[, "district"])) {
       current_parms_combination["beta0"] = paramEstimatesMatrice[i, "beta0"]
       current_parms_combination["alpha"] = paramEstimatesMatrice[i, "alpha"]
       current_parms_combination["phi"] = paramEstimatesMatrice[i, "phi"]
-      current_parms_combination["Susc0"] = paramEstimatesMatrice[i, "Susc0"]
-      current_parms_combination["CarrierProp"] = paramEstimatesMatrice[i, "CarrierProp"]
+      
+      current_parms_combination[startsWith(names(current_parms_combination), "Susc")][1] = paramEstimatesMatrice[i, susc_colnames[1]]
+      current_parms_combination[startsWith(names(current_parms_combination), "Susc")][2] = paramEstimatesMatrice[i, susc_colnames[2]]
+      current_parms_combination[startsWith(names(current_parms_combination), "Susc")][3] = paramEstimatesMatrice[i, susc_colnames[3]]
+      current_parms_combination[startsWith(names(current_parms_combination), "Susc")][4] = paramEstimatesMatrice[i, susc_colnames[4]]
+      
+      current_parms_combination[startsWith(names(current_parms_combination), "Carrier")][1] = paramEstimatesMatrice[i, carrier_colnames[1]]
+      current_parms_combination[startsWith(names(current_parms_combination), "Carrier")][2] = paramEstimatesMatrice[i, carrier_colnames[2]]
+      current_parms_combination[startsWith(names(current_parms_combination), "Carrier")][3] = paramEstimatesMatrice[i, carrier_colnames[3]]
+      current_parms_combination[startsWith(names(current_parms_combination), "Carrier")][4] = paramEstimatesMatrice[i, carrier_colnames[4]]
+      
+      #current_parms_combination["Susc0"] = paramEstimatesMatrice[i, "Susc0"]
+      #current_parms_combination["CarrierProp"] = paramEstimatesMatrice[i, "CarrierProp"]
       current_parms_combination["teta"] = paramEstimatesMatrice[i, "teta"]
       current_parms_combination["a0"] = paramEstimatesMatrice[i, "a0"]
       
@@ -67,9 +83,9 @@ mle_computeModelPredictionAndPerformStat <-
         ## comute fold increase of the invasion parameter.
         range_a = range(
           at(
-            current_parms_combination["a0"] * year,
-            current_parms_combination["epsilon_a"],
-            current_parms_combination["teta"]
+            current_parms_combination[["a0"]] * year,
+            current_parms_combination[["epsilon_a"]],
+            current_parms_combination[["teta"]]
           )
         )
         range_b = NA
@@ -80,9 +96,9 @@ mle_computeModelPredictionAndPerformStat <-
         ## comute fold increase of transmission parameter.
         range_b = range(
           betat(
-            current_parms_combination["beta0"] * year,
-            current_parms_combination["epsilon_b"],
-            current_parms_combination["teta"]
+            current_parms_combination[["beta0"]] * year,
+            current_parms_combination[["epsilon_b"]],
+            current_parms_combination[["teta"]]
           )
         )
         range_a = NA
@@ -91,16 +107,16 @@ mle_computeModelPredictionAndPerformStat <-
         current_parms_combination["epsilon_b"] = paramEstimatesMatrice[i, "epsilon_b"]
         range_a = range(
           at(
-            current_parms_combination["a0"] * year,
-            current_parms_combination["epsilon_a"],
-            current_parms_combination["teta"]
+            current_parms_combination[["a0"]] * year,
+            current_parms_combination[["epsilon_a"]],
+            current_parms_combination[["teta"]]
           )
         )
         range_b = range(
           betat(
-            current_parms_combination["beta0"] * year,
-            current_parms_combination["epsilon_b"],
-            current_parms_combination["teta"]
+            current_parms_combination[["beta0"]] * year,
+            current_parms_combination[["epsilon_b"]],
+            current_parms_combination[["teta"]]
           )
         )
       }
@@ -116,8 +132,8 @@ mle_computeModelPredictionAndPerformStat <-
       # get AICc and BIC for current health center
       AICc_selected_hc<- round(paramEstimatesMatrice[i, "AICc"])
       BIC_selected_hc<- round(paramEstimatesMatrice[i, "BIC"])
-
-
+      
+      
       # may need to moove this function from the local scope of
       # the computeModelPredictionAndPerformStat function to
       # a general scope so that it can be extended without breaking
@@ -195,25 +211,32 @@ mle_computeModelPredictionAndPerformStat <-
       
       data = select_data(year_now, district_now)
       current_hc_index = paramEstimatesMatrice[i, "hc"] # select the index of current health center
-
+      
       selected_hc_data = data$data[, current_hc_index]
       coredata = coredata(selected_hc_data)
       
-
+      
       # Compute model predictions based on the estimated parameters combination.
       nbYearSimulated = 1
       modelPredict <-
-        sim.SCIRS_harmonic(inits, current_parms_combination, nd = nbYearSimulated *
-                             year)
-      #modelPredict = tail(modelPredict, length(coredata))
+        sim.SCIRS_harmonic_age(inits,current_parms_combination,nd = nbYearSimulated * year)
+      
       modelPredict = modelPredict[1:length(coredata),]
-      modelPredict <-
-        subset(modelPredict, select = c(time, Susc, Carrier, Ill, Recov, newI))
-
-      modelPredict[, c(2:6)]<- modelPredict[, c(2:6)]/as.numeric(data$N[current_hc_index]) # devide the counts by the appropriate population size
+      modelPredict<- sum_incid_cases_and_carriers_colums(modelPredict)
+      
+      #modelPredict <-
+        #subset(modelPredict, select = c(time, Susc, Carrier, Ill, Recov, newI))
+      current_population = as.numeric(data$N[current_hc_index])
+      modelPredict[, c(2:3)]<- modelPredict[, c(2:3)]/sum(current_population) # devide the counts by the appropriate population size
       carriageVector = modelPredict$Carrier # variable to plot later
       carriageVector = sapply(carriageVector, replace_negligeable_negative_values)
       
+      #fitted_model_newI = fitted_model$newI
+      # prepare data and calibration results for plot
+      # current_population = as.numeric(data$N[current_hc_index])
+      # fitted_model_newI = (fitted_model_newI / sum(current_population))
+      # carriageVector = (carriageVector / sum(current_population))
+      #obs.data$incid = (obs.data$incid / sum(N)) * per_100000
       
       
       # check if ineq_constrain on carriage worked
@@ -294,7 +317,7 @@ mle_computeModelPredictionAndPerformStat <-
       
       # selecting health center name to add to plot
       hc_name = names(data$data)[current_hc_index]
-     
+      
       
       peak_value_data = max(coredata, na.rm = TRUE)
       
