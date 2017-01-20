@@ -22,7 +22,7 @@ installPackage <- function(packageName) {
 
 packages <- c(
     "deSolve","zoo","shape","lubridate","lattice","latticeExtra","FME", "hydroGOF","ggplot2","gplots", 
-    "data.table", "bbmle", "XML", "reshape2", "plyr","nloptr","scales", "ggthemes", "gridExtra"
+    "data.table", "bbmle", "XML", "reshape2", "plyr","nloptr","scales", "ggthemes", "gridExtra", "gdata"
 )
 
 #install packages

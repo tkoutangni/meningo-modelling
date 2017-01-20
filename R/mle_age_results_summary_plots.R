@@ -16,7 +16,7 @@ carrier_colnames = parm_matrice_colnames[grep("Carrier", parm_matrice_colnames)]
 
 base_text = "for 64 health center-years with complete data, across four health distrits of \nBurkina faso (2004-2010)."
 
-pdf(file = "figs/final_figs/mle_age_str_hyperendemic_models_estimations_plots_updates.pdf",
+pdf(file = paste(addSysDate("figs/final_figs/mle_age_str_hyperendemic_models_estimations_plots_updates_test"), 'pdf', sep = '.'),
     paper = "a4r" , family = "Times", pointsize =12)
 
 layout(1) # set graphical area for text display
@@ -220,7 +220,8 @@ print(plot2)
 
 dev.off() # end of producing pdf
 
-warning("\n A PDF file named 'mle_age_str_hyperendemic_model_estimations_plots_updates.pdf\n' is created and stored in the folder: figs/final_figs")
+warning("\n A PDF file named: ", paste(addSysDate('mle_age_str_hyperendemic_model_estimations_plots_updates_test'), 'pdf', sep = '.'), " is created and stored in the folder: figs/final_figs")
+
 # install.packages('cowplot')
 # library('cowplot')
 # ggdraw() +

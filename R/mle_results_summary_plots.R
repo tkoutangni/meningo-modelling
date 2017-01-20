@@ -15,7 +15,9 @@ base_text = "for 64 health center-years with complete data, across four health d
 # pdf options
 
 #pdf.options(width = 8.267, height = 11.692, family="Times")
-pdf(file = "figs/final_figs/mle_hyperendemic_models_estimations_plots_updated1.pdf", 
+#"figs/final_figs/mle_hyperendemic_models_estimations_plots_updated1.pdf"
+
+pdf(file = paste(addSysDate("figs/final_figs/mle_hyperendemic_models_estimations_plots_update"), 'pdf', sep = '.'), 
     paper = "a4r" , family = "Times", pointsize =12)
 
 layout(1) # set graphical area for text display
@@ -187,8 +189,6 @@ plot2<-plot2 + my_theme_for_facet
 #layout.show(nf)
 #multi_ggplot(plot2,plot1,cols=1)
 
-
-
 layout(1) # set graphical area for text display
 model_1_fig_text = paste('Figure 4. Distribution of parameters estimates and models performance \nstats, ',base_text)
 add_text_to_plot( model_1_fig_text, font_cex=1, valign = 'center', halign = 'left')
@@ -210,7 +210,9 @@ print(plot2)
 
 dev.off() # end of producing pdf
 
-warning("\n A PDF file named 'mle_hyperendemic_model_estimations_plots_updates.pdf\n' is created and stored in the folder: figs/final_figs")
+warning("\n A PDF file named: ", paste(addSysDate("mle_hyperendemic_models_estimations_plots_update"), 'pdf', sep = '.'), ' is created and stored in the folder: figs/final_figs')
+
+
 # install.packages('cowplot')
 # library('cowplot')
 # ggdraw() +
