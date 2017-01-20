@@ -8,7 +8,7 @@ graphSettings() # seeting plotting parameters
 # MODEL WITH NO AGE STRUCTURE
 # Model 1 # purposfully resimulate some hc with model 1 to check if code modification has an impact on previous prediction
 start.time <- Sys.time()
-nb_iteration = 1
+nb_iteration = 40000
 is_a0Constant = FALSE
 mle_non_epi_seguenNonEpiForc_a0_2007 = mleYearSpecFit(district_id=1,
                                                       district_year_data = non_missing_data(seguen_2007), 

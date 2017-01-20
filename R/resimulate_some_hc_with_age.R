@@ -8,7 +8,7 @@ graphSettings() # seeting plotting parameters
 
 #MODEL WITH AGE STRUCTURE
 start.time <- Sys.time()
-nb_iteration = 1
+nb_iteration = 40000
 #MODEL 2
 is_a0Constant = TRUE
 mle_age_str_non_epi_seguenNonEpiForc_beta0_2006 = mleYearSpecFit_age_str(district_id=1,
