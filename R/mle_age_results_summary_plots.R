@@ -17,7 +17,7 @@ carrier_colnames = parm_matrice_colnames[grep("Carrier", parm_matrice_colnames)]
 base_text = "for 64 health center-years with complete data, across four health distrits of \nBurkina faso (2004-2010)."
 
 pdf(file = paste(addSysDate("figs/final_figs/mle_age_str_hyperendemic_models_estimations_plots_updates_test"), 'pdf', sep = '.'),
-    paper = "a4r" , family = "Times", pointsize =12)
+    paper = "a4" , family = "Times", pointsize =12)
 
 layout(1) # set graphical area for text display
 add_text_to_plot(paste("Results of age structured model estimations using a poisson maximum likelihood approach.",""),font_cex = 1, valign = "center", halign = "left")
@@ -104,13 +104,15 @@ mle_age_str_a0_beta0_ForcEstimates_matrice$PBIAS_stat = model_3_performence$PBIA
 #mle_age_str_beta0ForcEstimates_matrice = mle_age_str_beta0ForcEstimates_matrice[-c(15,29,30,54),]
 #mle_age_str_a0_beta0_ForcEstimates_matrice = mle_age_str_a0_beta0_ForcEstimates_matrice[-c(15,29,30,54),]
 
-mle_age_str_a0ForcEstimates_matrice$AICc = log(mle_age_str_a0ForcEstimates_matrice$AICc)
-mle_age_str_beta0ForcEstimates_matrice$AICc = log(mle_age_str_beta0ForcEstimates_matrice$AICc)
-mle_age_str_a0_beta0_ForcEstimates_matrice$AICc = log(mle_age_str_a0_beta0_ForcEstimates_matrice$AICc)
+#log transform the AIC and BIC for plot
 
-mle_age_str_a0ForcEstimates_matrice$BIC = log(mle_age_str_a0ForcEstimates_matrice$BIC)
-mle_age_str_beta0ForcEstimates_matrice$BIC = log(mle_age_str_beta0ForcEstimates_matrice$BIC)
-mle_age_str_a0_beta0_ForcEstimates_matrice$BIC = log(mle_age_str_a0_beta0_ForcEstimates_matrice$BIC)
+# mle_age_str_a0ForcEstimates_matrice$AICc = log(mle_age_str_a0ForcEstimates_matrice$AICc)
+# mle_age_str_beta0ForcEstimates_matrice$AICc = log(mle_age_str_beta0ForcEstimates_matrice$AICc)
+# mle_age_str_a0_beta0_ForcEstimates_matrice$AICc = log(mle_age_str_a0_beta0_ForcEstimates_matrice$AICc)
+# 
+# mle_age_str_a0ForcEstimates_matrice$BIC = log(mle_age_str_a0ForcEstimates_matrice$BIC)
+# mle_age_str_beta0ForcEstimates_matrice$BIC = log(mle_age_str_beta0ForcEstimates_matrice$BIC)
+# mle_age_str_a0_beta0_ForcEstimates_matrice$BIC = log(mle_age_str_a0_beta0_ForcEstimates_matrice$BIC)
 
 library(reshape2)
 mle_age_str_a0ForcEstimates_matrice.m <- melt(mle_age_str_a0ForcEstimates_matrice, id.var = "district")

@@ -77,12 +77,12 @@ mle_non_epi_seguenNonEpiForc_a0_2007 = mleYearSpecFit(district_id=1,
 #####################################################################################
 #####################################################################################
 # MODEL 2
-is_a0Constant = FALSE
+is_a0Constant = TRUE
 mle_non_epi_seguenNonEpiForc_beta0_2007 = mleYearSpecFit(district_id=1,
                                                       district_year_data = non_missing_data(seguen_2007), 
                                                       population_size = seguen_2007_population_size,
                                                       year_now = 2007, hc_vector= c(1,3,6),
-                                                      a0ForcingOnly=FALSE, beta0ForcingOnly = FALSE, 
+                                                      a0ForcingOnly=FALSE, beta0ForcingOnly = TRUE, 
                                                       addCarriageConstrain = FALSE, show_plot = TRUE, verbose = FALSE,
                                                       # choose the appropriate method for algorithm
                                                       # use NLOPT_LN_BOBYQA or NLOPT_LN_COBYLA for LSQ fit with nloptr
@@ -95,7 +95,7 @@ mle_non_epi_seguenNonEpiForc_beta0_2010 = mleYearSpecFit(district_id=1,
                                                       district_year_data = non_missing_data(seguen_2010), 
                                                       population_size = seguen_2010_population_size,
                                                       year_now = 2010, hc_vector= c(2,5),
-                                                      a0ForcingOnly=FALSE, beta0ForcingOnly = FALSE, 
+                                                      a0ForcingOnly=FALSE, beta0ForcingOnly = TRUE, 
                                                       addCarriageConstrain = FALSE, show_plot = TRUE, verbose = FALSE,
                                                       # choose the appropriate method for algorithm
                                                       # use NLOPT_LN_BOBYQA or NLOPT_LN_COBYLA for LSQ fit with nloptr
@@ -108,7 +108,7 @@ mle_non_epi_houndeForc_beta0_2006 = mleYearSpecFit(district_id=2,
                                                 district_year_data = non_missing_data(hounde_2006), 
                                                 population_size = hounde_2006_population_size,
                                                 year_now = 2006, hc_vector= c(10),
-                                                a0ForcingOnly=FALSE, beta0ForcingOnly = FALSE, 
+                                                a0ForcingOnly=FALSE, beta0ForcingOnly = TRUE, 
                                                 addCarriageConstrain = FALSE, show_plot = TRUE, verbose = FALSE,
                                                 # choose the appropriate method for algorithm
                                                 # use NLOPT_LN_BOBYQA or NLOPT_LN_COBYLA for LSQ fit with nloptr
@@ -121,7 +121,7 @@ mle_non_epi_houndeForc_beta0_2008 = mleYearSpecFit(district_id=2,
                                                 district_year_data = non_missing_data(hounde_2008), 
                                                 population_size = hounde_2008_population_size,
                                                 year_now = 2008, hc_vector= c(2),
-                                                a0ForcingOnly=FALSE, beta0ForcingOnly = FALSE, 
+                                                a0ForcingOnly=FALSE, beta0ForcingOnly = TRUE, 
                                                 addCarriageConstrain = FALSE, show_plot = TRUE, verbose = FALSE,
                                                 # choose the appropriate method for algorithm
                                                 # use NLOPT_LN_BOBYQA or NLOPT_LN_COBYLA for LSQ fit with nloptr
@@ -134,7 +134,7 @@ mle_non_epi_kvigueForc_beta0_2010 = mleYearSpecFit(district_id=4,
                                                 district_year_data = non_missing_data(Kvigue_2010), 
                                                 population_size = kvigue_2010_population_size,
                                                 year_now = 2010, hc_vector= c(3),
-                                                a0ForcingOnly=FALSE, beta0ForcingOnly = FALSE, 
+                                                a0ForcingOnly=FALSE, beta0ForcingOnly = TRUE, 
                                                 addCarriageConstrain = FALSE, show_plot = TRUE, verbose = FALSE,
                                                 # choose the appropriate method for algorithm
                                                 # use NLOPT_LN_BOBYQA or NLOPT_LN_COBYLA for LSQ fit with nloptr
