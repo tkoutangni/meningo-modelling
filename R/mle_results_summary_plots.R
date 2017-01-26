@@ -15,8 +15,10 @@ base_text = "for 64 health center-years with complete data, across four health d
 # pdf options
 
 #pdf.options(width = 8.267, height = 11.692, family="Times")
-pdf(file = "figs/final_figs/mle_hyperendemic_models_estimations_plots_updated1.pdf", 
-    paper = "a4r" , family = "Times", pointsize =12)
+#"figs/final_figs/mle_hyperendemic_models_estimations_plots_updated1.pdf"
+
+pdf(file = paste(addSysDate("figs/final_figs/mle_hyperendemic_models_estimations_plots_update"), 'pdf', sep = '.'), 
+    paper = "a4" , family = "Times", pointsize =12)
 
 layout(1) # set graphical area for text display
 add_text_to_plot(paste("Results of model estimations using a poisson maximum likelihood approach.",""),font_cex = 1, valign = "center", halign = "left")
@@ -103,13 +105,14 @@ mle_a0_beta0_ForcEstimates_matrice$PBIAS_stat = model_3_performence$PBIAS_stat
 #mle_beta0ForcEstimates_matrice = mle_beta0ForcEstimates_matrice[-c(15,29,30,54),]
 #mle_a0_beta0_ForcEstimates_matrice = mle_a0_beta0_ForcEstimates_matrice[-c(15,29,30,54),]
 
-mle_a0ForcEstimates_matrice$AICc = log(mle_a0ForcEstimates_matrice$AICc)
-mle_beta0ForcEstimates_matrice$AICc = log(mle_beta0ForcEstimates_matrice$AICc)
-mle_a0_beta0_ForcEstimates_matrice$AICc = log(mle_a0_beta0_ForcEstimates_matrice$AICc)
-
-mle_a0ForcEstimates_matrice$BIC = log(mle_a0ForcEstimates_matrice$BIC)
-mle_beta0ForcEstimates_matrice$BIC = log(mle_beta0ForcEstimates_matrice$BIC)
-mle_a0_beta0_ForcEstimates_matrice$BIC = log(mle_a0_beta0_ForcEstimates_matrice$BIC)
+#log transform the AIC and BIC for plot
+# mle_a0ForcEstimates_matrice$AICc = log(mle_a0ForcEstimates_matrice$AICc)
+# mle_beta0ForcEstimates_matrice$AICc = log(mle_beta0ForcEstimates_matrice$AICc)
+# mle_a0_beta0_ForcEstimates_matrice$AICc = log(mle_a0_beta0_ForcEstimates_matrice$AICc)
+# 
+# mle_a0ForcEstimates_matrice$BIC = log(mle_a0ForcEstimates_matrice$BIC)
+# mle_beta0ForcEstimates_matrice$BIC = log(mle_beta0ForcEstimates_matrice$BIC)
+# mle_a0_beta0_ForcEstimates_matrice$BIC = log(mle_a0_beta0_ForcEstimates_matrice$BIC)
 
 library(reshape2)
 mle_a0ForcEstimates_matrice.m <- melt(mle_a0ForcEstimates_matrice, id.var = "district")
@@ -187,8 +190,6 @@ plot2<-plot2 + my_theme_for_facet
 #layout.show(nf)
 #multi_ggplot(plot2,plot1,cols=1)
 
-
-
 layout(1) # set graphical area for text display
 model_1_fig_text = paste('Figure 4. Distribution of parameters estimates and models performance \nstats, ',base_text)
 add_text_to_plot( model_1_fig_text, font_cex=1, valign = 'center', halign = 'left')
@@ -210,7 +211,9 @@ print(plot2)
 
 dev.off() # end of producing pdf
 
-warning("\n A PDF file named 'mle_hyperendemic_model_estimations_plots_updates.pdf\n' is created and stored in the folder: figs/final_figs")
+warning("\n A PDF file named: ", paste(addSysDate("mle_hyperendemic_models_estimations_plots_update"), 'pdf', sep = '.'), ' is created and stored in the folder: figs/final_figs')
+
+
 # install.packages('cowplot')
 # library('cowplot')
 # ggdraw() +

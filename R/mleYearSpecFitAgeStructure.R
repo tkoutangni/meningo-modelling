@@ -31,7 +31,7 @@ Objective_max_likelihood_age_structure <- function(guess_parms, parmset = names(
         # function for maximizing the log likelihood
         
         # take the negative loglikelihood in order to minimize the function toward 0.
-        
+        out[which(out$incid<0),c("incid", "Carrier")]<-c(0,0)
         negLogLik = -sum(dpois(
           x = round((obs.data$incid))+1e-12,lambda = ((out$incid)),log = T
         ))
@@ -41,7 +41,13 @@ Objective_max_likelihood_age_structure <- function(guess_parms, parmset = names(
         # ))
         # 
         
-        if(is.nan(negLogLik)){negLogLik = 1e+05}
+        if(is.nan(negLogLik)){
+                print(cbind(data= obs.data$incid, model= out$incid))
+                #out[which(out$incid<0),c("incid", "Carrier")]<-c(0,0)
+                cat("negative log likelihood is: ", negLogLik, "\nPlease check the output of model")
+                break
+                #negLogLik = 1e+05
+        }
         
         
         if(verbose) cat("\n Negative Log-Likelihood = ",negLogLik, "\n")

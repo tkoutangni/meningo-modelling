@@ -1,8 +1,8 @@
 #source("check_path_to_working_directory.R")
-#source("loadFunctions.R")
-load("../data/processed_data/new_processed_february_2016/a0ForcEstimates_matrice.RData")
-load("../data/processed_data/new_processed_february_2016/beta0ForcEstimates_matrice.RData")
-load("../data/processed_data/new_processed_february_2016/a0_beta0_ForcEstimates_matrice.RData")
+
+load("data/processed_data/new_processed_february_2016/a0ForcEstimates_matrice.RData")
+load("data/processed_data/new_processed_february_2016/beta0ForcEstimates_matrice.RData")
+load("data/processed_data/new_processed_february_2016/a0_beta0_ForcEstimates_matrice.RData")
 
 #dev.off() # clear all graphical devices and plots in the plotting area.
 

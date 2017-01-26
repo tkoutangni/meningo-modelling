@@ -12,7 +12,9 @@
 # NOTE: The for loop will loop through the index values hold in hc_vector and hc_vector also represent
 # row names of the fit_out matrix.
 
-
+## algorithm to fit the models on a yearly basis
+## using maximum likelihood instead of least-squares.
+## curve fitting approach
 
 mleYearSpecFit <-
     function(district_id, district_year_data, year_now,
