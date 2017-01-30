@@ -16,7 +16,7 @@ carrier_colnames = parm_matrice_colnames[grep("Carrier", parm_matrice_colnames)]
 
 base_text = "for 64 health center-years with complete data, across four health distrits of \nBurkina faso (2004-2010)."
 
-pdf(file = paste(addSysDate("figs/final_figs/mle_age_str_hyperendemic_models_estimations_plots_updates_test"), 'pdf', sep = '.'),
+pdf(file = paste(addSysDate("figs/final_figs/mle_age_str_hyperendemic_models_estimations_plots_updates"), 'pdf', sep = '.'),
     paper = "a4" , family = "Times", pointsize =12)
 
 layout(1) # set graphical area for text display
@@ -169,8 +169,8 @@ param_to_plot_labels<-c('Mean transmission /day',
 param_to_plot$variable_label<-factor(param_to_plot$variable,labels=param_to_plot_labels)
 
 perform_stats_to_plot_labels<-c('Akaike information criterion (AICc)', 
-                                'Bayesian information criterion (BIC)', 'Variability in data explained by each model',
-                                'Ratio of Root-Mean-Squared-Error to data standard deviation (RSR)','Percent Bias (PB)')
+                                'Bayesian information criterion (BIC)', 'Proportion of variance in data captured by each model',
+                                'Root Mean Squared Error/Data standard deviation (RSR)','Percent Bias (PB)')
 
 perform_stats_to_plot$variable_label<-factor(perform_stats_to_plot$variable,labels=perform_stats_to_plot_labels)
 
@@ -178,7 +178,7 @@ perform_stats_to_plot$variable_label<-factor(perform_stats_to_plot$variable,labe
 require(ggplot2)
 plot1<-ggplot(data = perform_stats_to_plot, aes(x=variable_label, y=value, fill=model)) + 
   geom_boxplot() + xlab("Performence Statistics")
-plot1 <- plot1 + facet_wrap( ~ variable_label, scales="free",nrow = 2, labeller= label_wrap_gen(width = 25))
+plot1 <- plot1 + facet_wrap( ~ variable_label, scales="free",nrow = 3, labeller= label_wrap_gen(width = 25))
 plot1 <- plot1 + xlab(" ") + ylab("Value") + ggtitle("Distribution of model performance stats across the 64 health center−years")
 plot1 <- plot1 + guides(fill=guide_legend(title="Models"))
 plot1 <- plot1 + my_theme_for_facet
@@ -189,7 +189,7 @@ plot2 <- ggplot(data = param_to_plot, aes(x=variable_label, y=value)) +
   geom_boxplot(aes(fill=model))
 # if you want color for points replace group with colour=Label
 #plot2 <- plot2 + geom_point(aes(y=value, group=model), position = position_dodge(width=0.75))
-plot2 <- plot2 + facet_wrap( ~ variable_label, scales="free",nrow = 5, labeller= label_wrap_gen(width = 25))
+plot2 <- plot2 + facet_wrap( ~ variable_label, scales="free",nrow = 6, labeller= label_wrap_gen(width = 20))
 plot2 <- plot2 + xlab("") + ylab("Value") + ggtitle("Distribution of parameters estimates across the 64 health center−years")
 plot2 <- plot2 + guides(fill=guide_legend(title="Models"))
 plot2<-plot2 + my_theme_for_facet
@@ -222,7 +222,7 @@ print(plot2)
 
 dev.off() # end of producing pdf
 
-warning("\n A PDF file named: ", paste(addSysDate('mle_age_str_hyperendemic_model_estimations_plots_updates_test'), 'pdf', sep = '.'), " is created and stored in the folder: figs/final_figs")
+warning("\n A PDF file named: ", paste(addSysDate('mle_age_str_hyperendemic_model_estimations_plots_updates'), 'pdf', sep = '.'), " is created and stored in the folder: figs/final_figs")
 
 # install.packages('cowplot')
 # library('cowplot')

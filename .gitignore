@@ -46,3 +46,7 @@ vignettes/*.pdf
 *.docx
 *.doc
 
+# folder to ignore
+R/2015_scripts/*
+R/2016_scritps/*
+
