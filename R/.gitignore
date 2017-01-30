@@ -1,0 +1,5 @@
+experiment_file_not_to_commit.R
+out_model_2_no_age.txt
+replace_restimated_values_in_parm_matrices.R
+resimulate_some_hc_model_2_no_age.R
+some_hc_mle_estimates_no_age_str_model_2.RData
