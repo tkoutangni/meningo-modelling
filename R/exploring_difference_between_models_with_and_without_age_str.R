@@ -79,7 +79,10 @@ abline(h=0, col="blue")
 #title('Comparing model with or without age-structure')
 dev.off()
 
-# legend(x=3.6,y=60,legend=c("Without age structure","With age structure"),fill=c("white", "grey"), title="Model structure")
+# compare age structured model with standard model based on health centers where the 
+# age structured model performed good
+
+
         
         
         
