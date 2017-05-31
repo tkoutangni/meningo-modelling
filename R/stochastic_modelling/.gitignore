@@ -1,4 +1,4 @@
 
 # Ignore the fitSCIRS folder for now until it is completed
-fitSCIRS/*
-do_not_commit_test_code/*
+/fitSCIRS/*
+/do_not_commit_test_code/*
