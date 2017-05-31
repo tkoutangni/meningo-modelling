@@ -1,4 +1,6 @@
-
+#use git rm --cached filname to untrack a file that is already tracked by git
+#then add it to git ignore. 
+#.gitignore only untracked filed not file already tracked
 # Ignore the fitSCIRS folder for now until it is completed
 /fitSCIRS/*
 /do_not_commit_test_code/*
