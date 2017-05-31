@@ -6,8 +6,12 @@
 # (a, b, c, etc..)
 # lubridate contains functions usefull for time series manipulation
 # gplots contain textplot() function to display text information in a graphic.
-
 # define a custom function to install packages only if they are not already installed yet.
+
+# install.packages('devtools')
+# library('devtools')
+# install_github("kingaa/pomp")
+
 installPackage <- function(packageName) {
   #scheck if a package is installed then install it if not.
   #@ parmeter : a character representing the package name
@@ -19,16 +23,48 @@ installPackage <- function(packageName) {
   }
 } # installPackage ends
 
-
 packages <- c(
-    "deSolve","zoo","shape","lubridate","lattice","latticeExtra","FME", "hydroGOF","ggplot2","gplots", 
-    "data.table", "bbmle", "XML", "reshape2", "plyr","nloptr","scales", "ggthemes", "gridExtra", "gdata"
+    "knitr",   
+    "deSolve",
+    "zoo",
+    "shape",
+    "lubridate",
+    "lattice",
+    "latticeExtra",
+    "FME", 
+    "hydroGOF",
+    "ggplot2",
+    "gplots", 
+    "data.table", 
+    "bbmle", 
+    "XML", 
+    "reshape2", 
+    "plyr",
+    "nloptr",
+    "scales", 
+    "ggthemes", 
+    "gridExtra", 
+    "gdata", 
+    "extrafont",
+    "httr",
+    #packages for stockastic model simmulations
+    "adaptivetau", 
+    "pomp", 
+    "devtools", 
+    "lazyeval",
+    "foreach",
+    #=======
+    "doMC", # for doing simulation on a multicore machine (exemple my macbook pro has 4 cores
+    # which i can leverage to parallelize simulations especially when large number of itterations...)
+    "fitR" # include very usefull functions for trajectories matching plots
+    #useing ggplot facet and so on 
 )
 
 #install packages
 lapply(packages, installPackage)
-
 #load packages
 lapply(packages, require, character.only = T)
 
-cat('Necessary packages are now installed and already loaded into the current envirement or workspace...\n')
+cat("Necessary packages are now installed and loaded into the current envirement or workspace...\n")
+
+

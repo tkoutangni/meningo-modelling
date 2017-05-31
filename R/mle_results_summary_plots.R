@@ -7,7 +7,8 @@ load("data/processed_data/new_processed_february_2016/mle_a0_beta0_ForcEstimates
 insert_age_structure = FALSE; heterogenous_mixing=FALSE
 source("R/run_first.R")
 source("R/models_parameters.R")
-source("R/mle_computeModelPredictAndPerformStats.R")
+#source("R/mle_computeModelPredictAndPerformStats.R")
+source("R/mle_computeModelPredictAndPerformance_modif.R")
 
 base_text = "for 64 health center-years with complete data, across four health distrits of \nBurkina faso (2004-2010)."
 
@@ -31,7 +32,8 @@ graphSettings() # set the graphical parameters.
 
 
 # compute and srore the model predicitons and performance stats
-graphSettings(); is_a0Constant = FALSE
+graphSettings(); is_a0Constant = FALSE;
+#par(mfrow=c(4,4)); par(mar=c(1,1,1,1))
 model_1_performence = mle_computeModelPredictionAndPerformStat(mle_a0ForcEstimates_matrice)
 
 # Model 2 plottings

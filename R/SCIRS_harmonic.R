@@ -66,7 +66,7 @@ SCIRS_harmonic = function(t, x, vparameters){
         # All we know is the expected absolute difference in the carriage prevalence 
         # between season, and point estimates of carriage prevalence in the dry and
         # wetseason (check Kristensen et al or leimkugel et al.)
-        
+        # states transitions
         f_SC = beta*Susc*(Carrier+Ill)/N
         f_CI = a*Carrier
         f_IR = rho*Ill
@@ -77,7 +77,7 @@ SCIRS_harmonic = function(t, x, vparameters){
         # the term meningitis death rate was added to compensate the birth rate for
         # population constancy so that population size becomes 1 (in proportion)
         
-        b = mu + act_comp_mening_death*(gamma*Ill) 
+        b = mu*N + (act_comp_mening_death*(gamma*Ill)) 
         # act_comp_mening_death : 0 or 1 (to compensate
         # meningitis death throught extra births) default to 1.
         

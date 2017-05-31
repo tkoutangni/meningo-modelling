@@ -10,7 +10,9 @@ get_population_age_stat_data <- function(country, year) {
     base_url = "http://www.census.gov/population/international/data/idb/region.php?N=%20Results%20&T=15&A=separate&RT=0&Y="
     country_query <- "&R=-1&C="
     url <- paste0(base_url, year, country_query, country)
-    df <- data.frame(readHTMLTable(url))
+    df<-GET(url)
+    df<- readHTMLTable(rawToChar(df$content))
+    df<- df[[1]] # the return df by readHTMLTable is a list of lenght 1: so need to take the data.frame
     keep <- c(2, 3, 4, 5, 6) #this specify the column of the data table to keep
     df <- df[,keep]  
     names(df) <- c("Age", "Both sex", "Male", "Female", "Both sex percent")
@@ -30,7 +32,6 @@ get_population_age_stat_data <- function(country, year) {
     #return(df.melt)
     return(df)
 }  # end get_population_age_stat_data function
-
 
 gg_prop <- ggplot(data = data.frame()
                   , aes(x = `Age group`, y = Population)) + 

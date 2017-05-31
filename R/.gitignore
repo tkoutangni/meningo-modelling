@@ -1,5 +1,21 @@
-experiment_file_not_to_commit.R
-out_model_2_no_age.txt
-replace_restimated_values_in_parm_matrices.R
-resimulate_some_hc_model_2_no_age.R
-some_hc_mle_estimates_no_age_str_model_2.RData
+
+
+# Ignore MAC .DS_Store files
+**/.DS_Store
+*.DS_Store
+.DS_store
+.Rproj.user
+
+# experiments files and folder not to commit
+
+/experiment_file_not_to_commit
+/out_model_2_no_age
+/replace_restimated_values_in_parm_matrices
+/resimulate_some_hc_model_2_no_age
+/some_hc_mle_estimates_no_age_str_model_2
+
+# Ignore the fitSCIRS folder for now until it is completed
+
+fitSCIRS/*
+
+

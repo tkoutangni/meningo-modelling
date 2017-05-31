@@ -235,15 +235,40 @@ if (initialGuessValues) {
 } # end if
 
 
-# old working initial conditions as of December 15, 2015
-#initial_guess_parms=c(
-#beta0 = 0.5,
-#alpha = 12/year,
-#phi = 4/year,
-#Susc0=0.5,
-#CarrierProp=0.5,
-#teta=97,
-#epsilon_a=0,
-#epsilon_b=0,
-#a0= mean(c(0.002/30,0.012/30))  # 0.005/30.
-#)
+# params bounds for model fitmodel objects.
+
+lower_bound = c(
+        beta0 = 0.00001, 
+        alpha = 1 / year, 
+        phi = 0.2 / year, 
+        teta = 91, 
+        epsilon_a = 0,
+        epsilon_b = 0,
+        a0 = 0.002/30,
+        #fixed params
+        gamma = 0,
+        mu = 1/60, # 60 ans maximum d'esperence de vie
+        rho = 0,#1/week,
+        act_comp_mening_death = 0
+        # ,Susc.0 = N,
+        # Carrier.0 = 1
+        
+)
+
+
+upper_bound = c(
+        beta0 = +Inf, 
+        alpha = 52 / year, 
+        phi = 12 / year, 
+        teta = 112, 
+        epsilon_a = 0.999,
+        epsilon_b = 0.999,
+        a0 = 0.012/30,
+        # fixed parameters
+        gamma = 5.2/year, #10% case fatality infered from a paper
+        mu = 1/50, # 50 and minimum d'esperence de vie 
+        rho = 1,#1/(2*week),
+        act_comp_mening_death = 1
+        # ,Susc.0 = N,
+        # Carrier.0 = 1
+)

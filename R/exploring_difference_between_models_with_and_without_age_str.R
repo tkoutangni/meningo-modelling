@@ -82,7 +82,9 @@ dev.off()
 # compare age structured model with standard model based on health centers where the 
 # age structured model performed good
 
-
-        
-        
+insert_age_structure = FALSE; heterogenous_mixing=FALSE
+source("R/models_parameters.R")
+source("R/mle_computeModelPredictAndPerformStats.R")
+which(mle_)       
+toto = mle_computeModelPredictionAndPerformStat
         

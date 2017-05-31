@@ -49,4 +49,5 @@ vignettes/*.pdf
 # folder to ignore
 R/2015_scripts/*
 R/2016_scritps/*
+R/old_experiments_scripts/*
 

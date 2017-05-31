@@ -534,7 +534,8 @@ beta0.harmonic <- function(beta0,epsilon_b,teta) {
 
 betat <- function(beta0, epsilon_b,teta) {
     beta_t = beta0.harmonic(beta0,epsilon_b,teta)
-    range(beta_t); (range(beta_t)[2]) / range(beta_t)[1]
+    #range(beta_t); (range(beta_t)[2]) / range(beta_t)[1]
+    print((range(beta_t)[2] - beta0) / beta0)
     #cat("value range of beta(t) is :",range(beta_t), "which correspond to a ",range(beta_t)[2]/range(beta_t)[1], "fold-increase\n")
     betat = list(beta_t = beta_t, range = range(beta_t))
     return(betat)
@@ -701,7 +702,8 @@ theme_opts = theme(
     axis.text = element_text(size = 12),
     legend.key = element_rect(fill = "white", colour = NA),
     legend.background = element_rect(fill = "white"),
-    legend.position = c("right"),
+    legend.position = c("top"),
+    legend.direction = "horizontal",
     legend.key.size = unit(1, "cm"),
     legend.text = element_text(size = 12),
     legend.title = element_text(size = 12),
@@ -715,6 +717,9 @@ my_theme_for_facet = theme_bw() +
   axis.text.x=element_blank(),
   axis.ticks.x=element_blank(),
   axis.title.x=element_blank(),
+  legend.position = c("top"),
+  legend.direction = "horizontal",
+  #legend.key.width = unit(2, "cm"),
   legend.background = element_rect(fill = "white"),
   text=element_text(family="Times", size=12))
 

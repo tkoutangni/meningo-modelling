@@ -6,7 +6,9 @@
 #==================================================
 doPlot = FALSE
 mav <- function(x,n=3){
-    filter(x,rep(1/n,n), sides=2) # sides = 2 indicates that observation i becomes
+    # must spacify the package name stats here to avoir conflict with a function with 
+    # the same name in another package called lazyeval (view list of package in rpackages.R)
+    stats::filter(x,rep(1/n,n), sides=2) # sides = 2 indicates that observation i becomes
     # the simple arithmetic average of observations i-1, i, and i+1
 }
 

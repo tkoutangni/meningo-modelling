@@ -35,7 +35,7 @@ source("R/plot_all_non_epi_data.R"); print(hyperendemic_data_plots) # visualize 
 
 cat('\n Finished ploting the health centers data \n')
 cat(" \n================================================ \n")
-cat('\n Model estimation can be run now for each of the 3 models \n')
+cat('\n Data is ready for use in optimisation routine for the R deterministic SCIRS modelling \n')
 
 # other tested models.
 
