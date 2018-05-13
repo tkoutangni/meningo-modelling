@@ -56,8 +56,14 @@ packages <- c(
     #=======
     "doMC", # for doing simulation on a multicore machine (exemple my macbook pro has 4 cores
     # which i can leverage to parallelize simulations especially when large number of itterations...)
-    "fitR" # include very usefull functions for trajectories matching plots
-    #useing ggplot facet and so on 
+    "fitR", # include very usefull functions for trajectories matching plots
+    #useing ggplot facet and so on
+    
+    #======
+    # packages added in May 2018
+    'tictoc' # to mesure code excution/runtime
+    #=====
+    
 )
 
 #install packages
