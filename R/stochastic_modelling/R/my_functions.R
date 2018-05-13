@@ -1,7 +1,61 @@
+# prepare data in a format that pomp object can use
+
+prepare_data_for_pomp<-function(hs_data_and_population_list, start_time, end_time){
+        subset(hs_data_and_population_list$demog_data,
+               time>=start_time & time<end_time,
+               select=c(date, semaine, time, population)) -> ready_demog_data
+        # round the size of the population to an integer
+        ready_demog_data$population<-round(ready_demog_data$population)
+        
+        subset(hs_data_and_population_list$ready_data,
+               time>=start_time & time<end_time,
+               select=c(date, semaine, time, meningitis_cases)) -> ready_data
+        
+        
+        head(ready_data)
+        head(ready_demog_data)
+        
+        return(list(ready_data = ready_data, 
+                    ready_demog_data = ready_demog_data))
+}
+
+
+
+
+get_unknown_theta_guess<-function(params){
+        # a function to get the values of desired columns in the previous params estimate matrice
+        c(
+                # estimates from previous work
+                params["beta0"]*year,
+                params["a0"]*year,
+                #params["alpha"]*year,
+                #params["teta"]/year,
+                params["epsilon_a"],
+                params["epsilon_b"],
+                params["phi"]*year
+        )
+}
 
 # My own functions for stochastic model simulation 
 # including those functions for testing purpose only
+# 
+# Function to time code execussion
+time_taken<-function(code_to_execute){
+        start.time <- Sys.time()
+        result<- code_to_execute
+        end.time <- Sys.time()
+        time.taken <- end.time - start.time
+        cat("\n This code took ", time.taken,  "second(s) to execute. \n")
+}
+
 #-------------------------------------------------------
+print_fit_result<- function(pomp_fitted_object, to_estimate_pars){
+        # a function to print the fit result.
+        cat("\n Log likelihood: ", logLik(pomp_fitted_object))
+        
+        cat('\n estimated params values: \n')
+        round(coef(pomp_fitted_object),6)[to_estimate_pars]
+}
 
 #------------------------------------
 get_estimates_at_desired_time<-function(data_frame, time_step){

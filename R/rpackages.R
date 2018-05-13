@@ -52,13 +52,20 @@ packages <- c(
     "pomp", 
     "devtools", 
     "lazyeval",
-    "foreach",
-    #=======
-    "doMC", # for doing simulation on a multicore machine (exemple my macbook pro has 4 cores
-    # which i can leverage to parallelize simulations especially when large number of itterations...)
-    "fitR" # include very usefull functions for trajectories matching plots
-    #useing ggplot facet and so on 
+    "foreach", # to loop execution, and allow parallelisation with doParallel %dopar% 
+    "fitR", # include very usefull functions for trajectories matching plots with ggplot
+    "magrittr", # for making grids of values
+    "doParallel", # package for parallel computing
+    "doMC", # also for doing simulation on a multicore machine 
+    "snow", # another package for parallel compting
+    "rio", # package for importing and exporting files in nearly every format
+    "ggpubr" # multiple ggplot in arranged grid with labels etc...
+    
 )
+
+# if fitR package failed to install due to R version, install it from git_hub instead.
+#library(devtools)
+##install_github("sbfnk/fitR@chennai")
 
 #install packages
 lapply(packages, installPackage)
